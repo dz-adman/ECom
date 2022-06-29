@@ -19,6 +19,7 @@
 	<packaging>pom</packaging>
 
 	<modules>
+		<module>ECom-Classes</module>
 		<module>ECom-Core</module>
 		<module>ECom-Boot</module>
 		<module>ECom-Products</module>
