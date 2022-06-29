@@ -14,7 +14,7 @@
 	<name>ECom-Boot</name>
 	<description>Boot Application for ECOM</description>
 	<properties>
-		<java.version>11</java.version>
+		<java.version>17</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -27,11 +27,7 @@
 			<scope>test</scope>
 		</dependency>
 		<!-- Modules -->
-		<dependency>
-			<groupId>com.ad.ecom.accounts</groupId>
-			<artifactId>Ecom-Accounts</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
+
 		<dependency>
 			<groupId>com.ad.ecom.products</groupId>
 			<artifactId>ECom-Products</artifactId>

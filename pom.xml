@@ -14,7 +14,7 @@
 	<name>ECOM</name>
 	<description>ECommerce Project Aggregator</description>
 	<properties>
-		<java.version>14</java.version>
+		<java.version>17</java.version>
 	</properties>
 	<packaging>pom</packaging>
 
@@ -23,9 +23,9 @@
 		<module>ECom-Core</module>
 		<module>ECom-Boot</module>
 		<module>ECom-Products</module>
-		<module>Ecom-Orders</module>
-		<module>Ecom-Payments</module>
-		<module>Ecom-Support</module>
+		<module>ECom-Orders</module>
+		<module>ECom-Payments</module>
+		<module>ECom-Support</module>
 	</modules>
 
 </project>

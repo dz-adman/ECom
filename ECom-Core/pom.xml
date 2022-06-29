@@ -14,7 +14,7 @@
 	<name>ECom-Core</name>
 	<description>ECom Core</description>
 	<properties>
-		<java.version>14</java.version>
+		<java.version>17</java.version>
 	</properties>
 	<packaging>jar</packaging>
 	<dependencies>
