@@ -26,6 +26,7 @@
 		<module>ECom-Orders</module>
 		<module>ECom-Payments</module>
 		<module>ECom-Support</module>
+		<module>ECom-User</module>
 	</modules>
 
 </project>
