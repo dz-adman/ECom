@@ -1,6 +1,5 @@
 package com.ad.ecom.core.security.config;
 
-import com.ad.ecom.core.security.CookieCsrfTokenRepositoryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +14,7 @@ import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.web.context.request.RequestContextListener;
 
@@ -39,12 +39,11 @@ public class EcomSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .csrf()
                 // CookieCsrfTokenRepository : to make csrf token available as cookie
-                // TODO: Change csrfToken per request
-                .csrfTokenRepository(new CookieCsrfTokenRepositoryBuilder().setCookieMaxAge(60).build()) // cookieMaxAge in seconds
+                .csrfTokenRepository(new CookieCsrfTokenRepository())
                 .and()
                 .authorizeRequests()
-                    .antMatchers(AUTH_WHITELIST)
-                    .permitAll()
+                .antMatchers(AUTH_WHITELIST)
+                .permitAll()
                 .antMatchers("/admin").hasRole("ADMIN")
                 .antMatchers("/user").hasRole("USER")
                 .anyRequest()
