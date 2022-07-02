@@ -60,12 +60,17 @@ public class Products {
     private ProductStockUnit stockUnit;
 
     @Column(nullable = false)
+    private boolean refundable;
+
+    private Double refundPercentage;
+
+    @Column(nullable = false)
     private long productOwnerId;
 
     @Column(nullable = false)
     private ProductStatus status;
 
-    public Products(String name, ProductCategory category, ProductSubCategory subCategory, ProductBrand brand, double price, long stock, ProductStockUnit stockUnit, long productOwnerId, ProductStatus status) {
+    public Products(String name, ProductCategory category, ProductSubCategory subCategory, ProductBrand brand, double price, long stock, ProductStockUnit stockUnit, long productOwnerId, ProductStatus status, boolean refundable) {
         this.name = name;
         this.category = category;
         this.subCategory = subCategory;
@@ -75,6 +80,7 @@ public class Products {
         this.stockUnit = stockUnit;
         this.productOwnerId = productOwnerId;
         this.status = status;
+        this.refundable = refundable;
     }
 
     public double getDiscountOnProduct(DiscountSubscriptionsRepository discountSubsRepo) {

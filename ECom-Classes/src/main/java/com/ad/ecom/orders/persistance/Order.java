@@ -1,7 +1,9 @@
 package com.ad.ecom.orders.persistance;
 
-import com.ad.ecom.common.dto.Item;
+import com.ad.ecom.discounts.repository.DiscountSubscriptionsRepository;
 import com.ad.ecom.orders.stubs.OrderStatus;
+import com.ad.ecom.products.persistance.Products;
+import com.ad.ecom.products.repository.ProductsRepository;
 import com.ad.ecom.user.persistance.Address;
 import lombok.*;
 import org.hibernate.annotations.Cache;
@@ -12,10 +14,11 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
@@ -34,14 +37,14 @@ public class Order {
     private OrderStatus status;
 
     @Column(nullable = false)
-    @Embedded
-    private List<Item> items;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<OrderItems> items;
 
     private double subTotal;
 
     private double total;
 
-    private double refundAmount;
+    private double refundableAmount;
 
     private String discountCodes;
 
@@ -62,14 +65,18 @@ public class Order {
 
     private Date completionDate;
 
-    public Order(long userId, OrderStatus status, List<Item> items, double subTotal, double total, double refundAmount, List<Long> discountIDs, Address deliveryAddress, Boolean paid, Boolean cancelled, Boolean refundable, Boolean refunded, Date initDate, Date completionDate) {
+    private Date cancellationDate;
+
+    @Column(nullable = false)
+    private String orderStages;
+
+    public Order(long userId, OrderStatus status, List<OrderItems> items, double subTotal, double total, double refundableAmount, Address deliveryAddress, Boolean paid, Boolean cancelled, Boolean refundable, Boolean refunded, Date initDate, Date completionDate) {
         this.userId = userId;
         this.status = status;
         this.items = items;
         this.subTotal = subTotal;
         this.total = total;
-        this.refundAmount = refundAmount;
-        this.discountCodes = discountCodes;
+        this.refundableAmount = refundableAmount;
         this.deliveryAddress = deliveryAddress;
         this.paid = paid;
         this.cancelled = cancelled;
@@ -79,7 +86,7 @@ public class Order {
         this.completionDate = completionDate;
     }
 
-    public List<String> getDiscountCodes() {
+    public List<String> getDiscountCodesList() {
         return new ArrayList(Arrays.asList(this.discountCodes.split(",")));
     }
 
@@ -87,4 +94,32 @@ public class Order {
         this.discountCodes = String.join(",", discountCodes);
     }
 
+    public List<OrderStatus> getOrderStagesList() {
+        List<String> stages = new ArrayList(Arrays.asList(this.orderStages.split(",")));
+        return stages.stream().map(s -> OrderStatus.valueOf(s)).collect(Collectors.toList());
+    }
+
+    public void setOrderStages(List<OrderStatus> orderStages) {
+        List<String> stages = orderStages.stream().map(s -> s.name()).collect(Collectors.toList());
+        this.orderStages = String.join(",", stages);
+    }
+
+    public void addOrderStages(List<OrderStatus> list) {
+        var stages = this.getOrderStagesList();
+        list.stream().forEach(item -> stages.add(item));
+        this.setOrderStages(stages);
+    }
+
+    public void calculateAndSetRefundableAmountAndFlag(ProductsRepository productsRepo, DiscountSubscriptionsRepository discountSubsRepo) {
+        List<Optional<Products>> products = this.getItems().stream().map(i -> productsRepo.findByProductId(i.getItemProductId())).collect(Collectors.toList());
+        double refundAmount = 0.0;
+        for(Optional<Products> p : products) {
+            if(p.isEmpty()) continue;
+            if(p.get().isRefundable()) {
+                double effectivePrice = p.get().getPrice() - p.get().getDiscountOnProduct(discountSubsRepo);
+                refundAmount += effectivePrice * (p.get().getRefundPercentage() / 100);
+            }
+        }
+        if(refundAmount > 0.0)  this.setRefundableAmount(refundAmount);
+    }
 }

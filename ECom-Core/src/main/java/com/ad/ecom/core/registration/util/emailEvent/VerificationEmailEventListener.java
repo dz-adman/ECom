@@ -1,8 +1,9 @@
-package com.ad.ecom.core.registration.util;
+package com.ad.ecom.core.registration.util.emailEvent;
 
 import com.ad.ecom.core.ecomuser.persistance.EcomUser;
 import com.ad.ecom.core.registration.persistance.VerificationToken;
 import com.ad.ecom.core.registration.repository.VerificationTokenRepository;
+import com.ad.ecom.core.registration.util.WebTemplates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -60,8 +61,9 @@ public class VerificationEmailEventListener {
             helper.setText(message, true);
             mailSender.send(mimeMessage);
         } catch (MessagingException ex) {
-            return false;
+            ex.printStackTrace();
+            return Boolean.FALSE;
         }
-        return true;
+        return Boolean.TRUE;
     }
 }

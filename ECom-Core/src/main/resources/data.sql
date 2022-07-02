@@ -9,15 +9,15 @@ INSERT INTO ECOM_USER_ADDRESS (id, user_id, address_type, default_address, addre
 (1, 2, 0, 1, "#142/1 DSN", "PATIALA", "PUNJAB", "INDIA", 147004, null),
 (2, 3, 0, 1, "#141/1 DSN", "PATIALA", "PUNJAB", "INDIA", 147004, null);
 
-INSERT INTO ECOM_PRODUCTS (id, product_id, name, category, sub_category, brand, price, stock, stock_unit, product_owner_id, status) VALUES
-(1, "PRDCT_00001", "Brush", 1, 5, 2, 25.00, 10, 0, 1, 1),
-(2, "PRDCT_00002", "Towel", 1, 5, 2, 250.00, 10, 0, 1, 1),
-(3, "PRDCT_00003", "Hair Oil", 1, 5, 2, 50.00, 10, 0, 4, 1),
-(4, "PRDCT_00004", "Men's Jacket", 1, 5, 1, 7500.00, 10, 0, 4, 1),
-(5, "PRDCT_00005", "Cap", 1, 5, 1, 335.00, 10, 0, 4, 1),
-(6, "PRDCT_00006", "A-to-C Cable", 0, 5, 1, 200.00, 10, 0, 5, 1),
-(7, "PRDCT_00007", "Chain Lubricant", 2, 5, 0, 500.00, 10, 0, 5, 1),
-(8, "PRDCT_00008", "Engine Oil", 2, 5, 0, 1250.00, 10, 0, 5, 1);
+INSERT INTO ECOM_PRODUCTS (id, product_id, name, category, sub_category, brand, price, stock, stock_unit, refundable, refund_percentage, product_owner_id, status) VALUES
+(1, "PRDCT_00001", "Brush", 1, 5, 2, 25.00, 10, 0, false, null, 1, 1),
+(2, "PRDCT_00002", "Towel", 1, 5, 2, 250.00, 10, 0, true, 25.0, 1, 1),
+(3, "PRDCT_00003", "Hair Oil", 1, 5, 2, 50.00, 10, 0, true, 10.0, 4, 1),
+(4, "PRDCT_00004", "Men's Jacket", 1, 5, 1, 7500.00, 10, 0, false, null, 4, 1),
+(5, "PRDCT_00005", "Cap", 1, 5, 1, 335.00, 10, 0, false, null, 4, 1),
+(6, "PRDCT_00006", "A-to-C Cable", 0, 5, 1, 200.00, 10, 0, false, null, 5, 1),
+(7, "PRDCT_00007", "Chain Lubricant", 2, 5, 0, 500.00, 10, 0, true, 30.0, 5, 1),
+(8, "PRDCT_00008", "Engine Oil", 2, 5, 0, 1250.00, 10, 0, true, 35.0, 5, 1);
 
 INSERT INTO ECOM_PRDCT_DISCNT (id, code, name, valid_from, valid_to, percentage_value, status) VALUES
 (1, "DISCNT_00001", "NEW YEAR", '2022-01-01', '2022-01-7', 2, 1),
