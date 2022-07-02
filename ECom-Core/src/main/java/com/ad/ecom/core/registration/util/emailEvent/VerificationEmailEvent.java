@@ -1,4 +1,4 @@
-package com.ad.ecom.core.registration.util;
+package com.ad.ecom.core.registration.util.emailEvent;
 
 import com.ad.ecom.core.ecomuser.persistance.EcomUser;
 import lombok.Getter;

@@ -2,7 +2,6 @@ package com.ad.ecom.orders.dto;
 
 import com.ad.ecom.common.dto.Item;
 import com.ad.ecom.common.stub.EComDate;
-import com.ad.ecom.user.persistance.Address;
 import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,5 +22,5 @@ public class OrderInfo {
     private double total;
     private double refundAmount;
     @NotNull
-    private Address deliveryAddress;
+    private long deliveryAddressId;
 }
