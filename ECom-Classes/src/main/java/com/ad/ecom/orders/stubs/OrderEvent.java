@@ -11,9 +11,10 @@ public enum OrderEvent {
     INIT_SHIPMENT(3),
     CANCEL_ORDER(4),
     REFUND_COMPLETE(5),
-    COMPLETE(6),
-    DELIVERED(7),
-    INIT_REFUND(8);
+    REFUND_FAILED(6),
+    COMPLETE(7),
+    DELIVERED(8),
+    INIT_REFUND(9);
 
     private int value;
 
