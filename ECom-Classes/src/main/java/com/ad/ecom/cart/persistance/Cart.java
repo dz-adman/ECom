@@ -1,6 +1,5 @@
 package com.ad.ecom.cart.persistance;
 
-import com.ad.ecom.common.dto.Item;
 import lombok.*;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -27,14 +26,14 @@ public class Cart {
     @Column(nullable = false)
     private long userId;
 
-    @Embedded
-    private List<Item> items = new ArrayList<>();
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
+    private List<CartItems> items = new ArrayList<>();
 
     private double subTotal = 0.0;
 
     private Date lastUpdatedOn;
 
-    public Cart(long userId, List<Item> items, double subTotal, Date lastUpdatedOn) {
+    public Cart(long userId, List<CartItems> items, double subTotal, Date lastUpdatedOn) {
         this.userId = userId;
         this.items = items;
         this.subTotal = subTotal;
