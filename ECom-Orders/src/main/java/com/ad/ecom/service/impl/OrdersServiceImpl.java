@@ -4,6 +4,8 @@ import com.ad.ecom.common.dto.Item;
 import com.ad.ecom.common.stub.ResponseMessage;
 import com.ad.ecom.common.stub.ResponseType;
 import com.ad.ecom.core.context.EComUserLoginContext;
+import com.ad.ecom.core.ecomuser.persistance.EcomUser;
+import com.ad.ecom.core.ecomuser.repository.EcomUserRepository;
 import com.ad.ecom.core.ecomuser.stubs.Role;
 import com.ad.ecom.discounts.persistance.DiscountSubscription;
 import com.ad.ecom.discounts.repository.DiscountSubscriptionsRepository;
@@ -22,9 +24,11 @@ import com.ad.ecom.ssm.OrdersSMInterceptor;
 import com.ad.ecom.user.repository.AddressRepository;
 import com.ad.ecom.util.DateConverter;
 import com.ad.ecom.util.SSMUtil;
+import com.ad.ecom.util.emailEvent.OrderStatusUpdateEmailEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.statemachine.StateMachine;
@@ -50,6 +54,8 @@ public class OrdersServiceImpl implements OrdersService {
     @Autowired
     private EComUserLoginContext loginContext;
     @Autowired
+    private ApplicationEventPublisher eventPublisher;
+    @Autowired
     private ProductsRepository productsRepo;
     @Autowired
     private OrdersRepository ordersRepo;
@@ -57,6 +63,8 @@ public class OrdersServiceImpl implements OrdersService {
     private OrderItemsRepository orderItemsRepo;
     @Autowired
     private AddressRepository addressRepo;
+    @Autowired
+    private EcomUserRepository userRepo;
     @Autowired
     private DiscountSubscriptionsRepository discountSubsRepo;
 
@@ -85,9 +93,13 @@ public class OrdersServiceImpl implements OrdersService {
                 StateMachine<OrderStatus, OrderEvent> sm = SSMUtil.INSTANCE.buildOrderSSM(order.getOrderId(), ordersRepo, factory, smInterceptor);
                 SSMUtil.INSTANCE.processEvent(sm, OrderEvent.PROCESS_ORDER, order);
 
+                // send email for status update
+                sendOrderStatusUpdateMail(order);
+
                 // update orderStages
                 order.addOrderStages(Arrays.asList(OrderStatus.PENDING_PAYMENT));
                 ordersRepo.save(order);
+
 
                 responseMessage.setResponseData(order.getOrderId());
                 responseMessage.addResponse(ResponseType.SUCCESS, "Order Init Success");
@@ -144,14 +156,18 @@ public class OrdersServiceImpl implements OrdersService {
                 // ssm
                 SSMUtil.INSTANCE.processEvent(sm, OrderEvent.PAYMENT_SUCCESSFUL, order.get());
 
+                // update inventory product-stock
+                updateInventoryReduceStock(order.get());
+
                 // update orderStages
                 order.get().addOrderStages(Arrays.asList(OrderStatus.PAID));
                 // set paid flag
                 order.get().setPaid(true);
                 ordersRepo.save(order.get());
 
-                // update inventory product-stock
-                updateInventoryReduceStock(order.get());
+
+                // send email for status update
+                sendOrderStatusUpdateMail(order.get());
 
                 // set transaction reference number in responseData
                 response.setResponseData(orderId);
@@ -160,6 +176,10 @@ public class OrdersServiceImpl implements OrdersService {
             } else {
                 // ssm
                 SSMUtil.INSTANCE.processEvent(sm, OrderEvent.PAYMENT_FAILED, order.get());
+
+                // send email for status update
+                sendOrderStatusUpdateMail(order.get());
+
                 // update orderStages
                 order.get().addOrderStages(Arrays.asList(OrderStatus.PENDING_PAYMENT));
                 ordersRepo.save(order.get());
@@ -174,6 +194,10 @@ public class OrdersServiceImpl implements OrdersService {
 
             // ssm
             SSMUtil.INSTANCE.processEvent(sm, OrderEvent.PAYMENT_FAILED, order.get());
+
+            // send email for status update
+            sendOrderStatusUpdateMail(order.get());
+
             // update orderStages
             order.get().addOrderStages(Arrays.asList(OrderStatus.PENDING_PAYMENT));
             ordersRepo.save(order.get());
@@ -195,9 +219,13 @@ public class OrdersServiceImpl implements OrdersService {
             StateMachine<OrderStatus, OrderEvent> sm = SSMUtil.INSTANCE.buildOrderSSM(orderId, ordersRepo, factory, smInterceptor);
             SSMUtil.INSTANCE.processEvent(sm, OrderEvent.INIT_SHIPMENT, order.get());
 
+            // send email for status update
+            sendOrderStatusUpdateMail(order.get());
+
             // update orderStages
             order.get().addOrderStages(Arrays.asList(OrderStatus.SHIPPED));
             ordersRepo.save(order.get());
+
 
             responseMessage.setResponseData(orderId);
             responseMessage.addResponse(ResponseType.SUCCESS, "Order Shipment Initiated");
@@ -217,6 +245,9 @@ public class OrdersServiceImpl implements OrdersService {
             StateMachine<OrderStatus, OrderEvent> sm = SSMUtil.INSTANCE.buildOrderSSM(orderId, ordersRepo, factory, smInterceptor);
             SSMUtil.INSTANCE.processEvent(sm, OrderEvent.CANCEL_ORDER, order.get());
 
+            // send email for status update
+            sendOrderStatusUpdateMail(order.get());
+
             // set cancelled flag and cancellation date
             order.get().setCancelled(true);
             order.get().setCancellationDate(new Date(System.currentTimeMillis()));
@@ -228,6 +259,9 @@ public class OrdersServiceImpl implements OrdersService {
             } else {
                 // ssm update - RefundAndComplete
                 SSMUtil.INSTANCE.processEvent(sm, OrderEvent.COMPLETE, order.get());
+
+                // send email for status update
+                sendOrderStatusUpdateMail(order.get());
 
                 // update orderStages
                 order.get().addOrderStages(Arrays.asList(OrderStatus.CANCELLED, OrderStatus.CANCELLED_AND_COMPLETE));
@@ -272,6 +306,9 @@ public class OrdersServiceImpl implements OrdersService {
             StateMachine<OrderStatus, OrderEvent> sm = SSMUtil.INSTANCE.buildOrderSSM(orderId, ordersRepo, factory, smInterceptor);
             SSMUtil.INSTANCE.processEvent(sm, OrderEvent.DELIVERED, order.get());
 
+            // send email for status update
+            sendOrderStatusUpdateMail(order.get());
+
             // update orderStages
             order.get().addOrderStages(Arrays.asList(OrderStatus.DELIVERED_AND_COMPLETE));
             // set completion date
@@ -296,8 +333,14 @@ public class OrdersServiceImpl implements OrdersService {
             StateMachine<OrderStatus, OrderEvent> sm = SSMUtil.INSTANCE.buildOrderSSM(orderId, ordersRepo, factory, smInterceptor);
             SSMUtil.INSTANCE.processEvent(sm, OrderEvent.REFUND_COMPLETE, order.get());
 
+            // send email for status update
+            sendOrderStatusUpdateMail(order.get());
+
             // ssm update - refunded and complete
             SSMUtil.INSTANCE.processEvent(sm, OrderEvent.COMPLETE, order.get());
+
+            // send email for status update
+            sendOrderStatusUpdateMail(order.get());
 
             // update orderStages
             order.get().addOrderStages(Arrays.asList(OrderStatus.REFUNDED, OrderStatus.REFUNDED_AND_COMPLETE));
@@ -369,6 +412,9 @@ public class OrdersServiceImpl implements OrdersService {
             // ssm update - Init Refund
             SSMUtil.INSTANCE.processEvent(sm, OrderEvent.INIT_REFUND, order);
 
+            // send email for status update
+            sendOrderStatusUpdateMail(order);
+
             CompletableFuture<Boolean> refundStatus = initOrderRefund(order);
             refundStatus.get(60, TimeUnit.SECONDS);
             if (!refundStatus.isDone()) refundStatus.complete(false);
@@ -377,8 +423,14 @@ public class OrdersServiceImpl implements OrdersService {
                 // ssm update - Refund Complete
                 SSMUtil.INSTANCE.processEvent(sm, OrderEvent.REFUND_COMPLETE, order);
 
+                // send email for status update
+                sendOrderStatusUpdateMail(order);
+
                 // ssm update - RefundAndComplete
                 SSMUtil.INSTANCE.processEvent(sm, OrderEvent.COMPLETE, order);
+
+                // send email for status update
+                sendOrderStatusUpdateMail(order);
 
                 // update orderStages
                 order.addOrderStages(Arrays.asList(OrderStatus.REFUNDED, OrderStatus.REFUNDED_AND_COMPLETE));
@@ -396,6 +448,9 @@ public class OrdersServiceImpl implements OrdersService {
             // ssm update - Refund Failed
             SSMUtil.INSTANCE.processEvent(sm, OrderEvent.REFUND_FAILED, order);
 
+            // send email for status update
+            sendOrderStatusUpdateMail(order);
+
             // update orderStages
             order.addOrderStages(Arrays.asList(OrderStatus.REFUND_PENDING));
             ordersRepo.save(order);
@@ -410,6 +465,9 @@ public class OrdersServiceImpl implements OrdersService {
             // ssm update - Refund Failed
             SSMUtil.INSTANCE.processEvent(sm, OrderEvent.REFUND_FAILED, order);
 
+            // send email for status update
+            sendOrderStatusUpdateMail(order);
+
             // update orderStages
             order.addOrderStages(Arrays.asList(OrderStatus.REFUND_PENDING));
             ordersRepo.save(order);
@@ -423,5 +481,10 @@ public class OrdersServiceImpl implements OrdersService {
         // Integrate Payment Gateway API and use in the supplier
         Supplier<Boolean> supplier = () -> true;
         return CompletableFuture.supplyAsync(supplier);
+    }
+
+    private void sendOrderStatusUpdateMail(Order order) {
+        Optional<EcomUser> user = userRepo.findById(order.getUserId());
+        eventPublisher.publishEvent(new OrderStatusUpdateEmailEvent(this, user.get(), order.getOrderId(), order.getStatus()));
     }
 }

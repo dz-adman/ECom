@@ -1,6 +1,7 @@
 package com.ad.ecom.core.registration.util;
 
 import com.ad.ecom.core.ecomuser.persistance.EcomUser;
+import com.ad.ecom.orders.stubs.OrderStatus;
 
 public final class WebTemplates {
 
@@ -52,6 +53,44 @@ public final class WebTemplates {
                 "\t\t</h3></p>\n" +
                 "\t\t</center>\n" +
                 "\t</body>" +
+                "</html>";
+    }
+
+    public static String OrderStatusUpdateTemplate(EcomUser user, long orderId, OrderStatus orderStatus, String loginURL) {
+        return "<!DOCTYPE html>\n" +
+                "<html>\n" +
+                "\t<head>\n" +
+                "\t\t<style>\n" +
+                "\t\t    center {\n" +
+                "\t\t\t\tmargin: 0 auto !important;\n" +
+                "\t\t\t}           \n" +
+                "\t\t\tp {\n" +
+                "\t\t\t\tbackground-color: lightsteelblue;\n" +
+                "\t\t\t\tcolor: white;               padding-top: 20px;\n" +
+                "\t\t\t\tpadding-bottom: 20px;\n" +
+                "\t\t\t\tpadding-left: 0;\n" +
+                "\t\t\t\tpadding-right: 0;\n" +
+                "\t\t\t\tfont-family: \"Lucida Console\", \"Courier New\", monospace;\n" +
+                "\t\t\t}\n" +
+                "\t\t\th3 {\n" +
+                "\t\t\t\tbackground-color: white;\n" +
+                "\t\t\t}\n" +
+                "\t\t\t@media only screen and (min-width: 930px) {\n" +
+                "\t\t\t\tcenter {\n" +
+                "\t\t\t\t\twidth: 50%;\n" +
+                "\t\t\t\t}\n" +
+                "\t\t\t}\n" +
+                "\t\t</style>\n" +
+                "\t</head>\n" +
+                "\t<body>\n" +
+                "\t\t<center>\n" +
+                "\t\t<p><h3>\n" +
+                "\t\t\tHi " + user.getFirstName() + " " + user.getLastName() + "!<br/>\n" +
+                "\t\t\tStatus of your order[order id : " + orderId + "] is changed to " + orderStatus.name() + "<br/><br/>\n" +
+                "\t\t\t<span><a>Login to <a href=\"" + loginURL + "\">ECOM</a> for details</a></span>\n" +
+                "\t\t</h3></p>\n" +
+                "\t\t</center>\n" +
+                "\t</body>\n" +
                 "</html>";
     }
 

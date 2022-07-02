@@ -9,7 +9,7 @@ import com.ad.ecom.core.registration.persistance.VerificationToken;
 import com.ad.ecom.core.registration.repository.VerificationTokenRepository;
 import com.ad.ecom.core.registration.service.EmailValidatorService;
 import com.ad.ecom.core.registration.service.RegistrationService;
-import com.ad.ecom.core.registration.util.VerificationEmailEvent;
+import com.ad.ecom.core.registration.util.emailEvent.VerificationEmailEvent;
 import com.ad.ecom.core.registration.util.WebTemplates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
