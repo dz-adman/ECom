@@ -17,8 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
@@ -70,6 +69,7 @@ public class Order {
     @Column(nullable = false)
     private String orderStages;
 
+    @Builder
     public Order(long userId, OrderStatus status, List<OrderItems> items, double subTotal, double total, double refundableAmount, Address deliveryAddress, Boolean paid, Boolean cancelled, Boolean refundable, Boolean refunded, Date initDate, Date completionDate) {
         this.userId = userId;
         this.status = status;

@@ -1,18 +1,19 @@
 package com.ad.ecom.core.registration.persistance;
 
 import com.ad.ecom.core.ecomuser.persistance.EcomUser;
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity(name = "ACTIVATION_TOKEN")
 public class VerificationToken {
 
@@ -36,6 +37,7 @@ public class VerificationToken {
     @Column(nullable = false)
     private boolean used = false;
 
+    @Builder
     public Date calculateExpiryDate(int expiryTimeInMinutes) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Timestamp(cal.getTime().getTime()));

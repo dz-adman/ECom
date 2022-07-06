@@ -8,11 +8,10 @@ import lombok.*;
 
 import java.io.Serializable;
 
-@Getter
-@Setter
-@ToString
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ProductDto implements Serializable {
     private String productId;
     private String name;

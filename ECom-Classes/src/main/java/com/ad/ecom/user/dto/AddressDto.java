@@ -5,11 +5,10 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.*;
 
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-@ToString
+@Builder
 public class AddressDto {
     private long addressId;
     @NotNull @NotBlank @NotEmpty

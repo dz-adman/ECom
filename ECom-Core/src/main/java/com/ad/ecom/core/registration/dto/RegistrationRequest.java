@@ -1,6 +1,8 @@
 package com.ad.ecom.core.registration.dto;
 
 import com.ad.ecom.core.ecomuser.stubs.Role;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +12,8 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class RegistrationRequest {
     @NotNull @NotEmpty @NotBlank
     private String loginId;

@@ -9,11 +9,10 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
-@Getter
-@Setter
-@ToString
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class DiscountsObjDto implements Serializable {
     @NotNull @NotEmpty @NotBlank
     private String name;

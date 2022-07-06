@@ -10,7 +10,7 @@ import javax.persistence.*;
 import java.util.Arrays;
 import java.util.Collection;
 
-@ToString
+@Data
 @EqualsAndHashCode
 @NoArgsConstructor
 @Entity(name = "ECOM_USER")
@@ -45,6 +45,7 @@ public class EcomUser implements UserDetails {
 
     private Boolean deleted = false;
 
+    @Builder
     public EcomUser(String firstName, String lastName, String loginId, String email, String password, Role role, Boolean locked, Boolean enabled, Boolean deleted) {
         this.firstName = firstName;
         this.lastName = lastName;

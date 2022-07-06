@@ -15,10 +15,9 @@ import javax.persistence.*;
 import java.sql.Date;
 import java.util.List;
 
-@Getter
-@Setter
-@ToString
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
 @Entity(name = "ECOM_PRODUCTS")
@@ -70,6 +69,7 @@ public class Products {
     @Column(nullable = false)
     private ProductStatus status;
 
+    @Builder
     public Products(String name, ProductCategory category, ProductSubCategory subCategory, ProductBrand brand, double price, long stock, ProductStockUnit stockUnit, long productOwnerId, ProductStatus status, boolean refundable) {
         this.name = name;
         this.category = category;

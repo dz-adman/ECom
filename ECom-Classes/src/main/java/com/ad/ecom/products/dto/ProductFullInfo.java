@@ -6,11 +6,10 @@ import lombok.*;
 import javax.validation.constraints.*;
 import java.io.Serializable;
 
-@Getter
-@Setter
-@ToString
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ProductFullInfo implements Serializable {
     @NotNull
     private String productId;

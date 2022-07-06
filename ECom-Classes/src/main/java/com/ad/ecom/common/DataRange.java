@@ -1,10 +1,8 @@
-package com.ad.ecom.util;
+package com.ad.ecom.common;
 
 import lombok.*;
 
-@Getter
-@Setter
-@ToString
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class DataRange<T> {

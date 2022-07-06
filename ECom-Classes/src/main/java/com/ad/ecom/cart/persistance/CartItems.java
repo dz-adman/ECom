@@ -8,9 +8,8 @@ import org.hibernate.annotations.OnDeleteAction;
 import javax.persistence.*;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@NoArgsConstructor
 @Entity(name = "ECOM_CART_ITEMS")
 public class CartItems {
 
@@ -28,4 +27,13 @@ public class CartItems {
     private long itemQuantity;
     @Column(nullable = false)
     private ProductStockUnit itemUnit;
+
+    @Builder
+    public CartItems(Cart cart, String itemProductId, String itemProductName, long itemQuantity, ProductStockUnit itemUnit) {
+        this.cart = cart;
+        this.itemProductId = itemProductId;
+        this.itemProductName = itemProductName;
+        this.itemQuantity = itemQuantity;
+        this.itemUnit = itemUnit;
+    }
 }

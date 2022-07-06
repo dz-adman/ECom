@@ -10,7 +10,6 @@ import javax.persistence.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Entity(name = "ECOM_ORDER_ITEMS")
 public class OrderItems {
 
@@ -28,4 +27,13 @@ public class OrderItems {
     private long itemQuantity;
     @Column(nullable = false)
     private ProductStockUnit itemUnit;
+
+    @Builder
+    public OrderItems(Order order, String itemProductId, String itemProductName, long itemQuantity, ProductStockUnit itemUnit) {
+        this.order = order;
+        this.itemProductId = itemProductId;
+        this.itemProductName = itemProductName;
+        this.itemQuantity = itemQuantity;
+        this.itemUnit = itemUnit;
+    }
 }

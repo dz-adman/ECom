@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public enum ProductStatus {
-    ACTIVE(1), INACTIVE(0), OUT_OF_STOCK(2);
+    INACTIVE(0), ACTIVE(1), OUT_OF_STOCK(2);
 
     private int value;
     private static Map<Integer, ProductStatus> map = new HashMap<>();

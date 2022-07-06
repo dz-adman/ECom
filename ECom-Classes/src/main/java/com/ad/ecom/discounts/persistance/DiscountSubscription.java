@@ -8,9 +8,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 
-@Getter
-@Setter
-@ToString
+@Data
 @NoArgsConstructor
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
@@ -34,6 +32,7 @@ public class DiscountSubscription {
     @Column(nullable = false)
     private DiscountStatus status;
 
+    @Builder
     public DiscountSubscription(Discounts discount, Products product, DiscountStatus status) {
         this.discount = discount;
         this.product = product;

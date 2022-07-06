@@ -9,9 +9,8 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
-@Setter
-@ToString
+@Data
+@AllArgsConstructor
 @NoArgsConstructor
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
@@ -33,6 +32,7 @@ public class Cart {
 
     private Date lastUpdatedOn;
 
+    @Builder
     public Cart(long userId, List<CartItems> items, double subTotal, Date lastUpdatedOn) {
         this.userId = userId;
         this.items = items;
@@ -40,3 +40,5 @@ public class Cart {
         this.lastUpdatedOn = lastUpdatedOn;
     }
 }
+
+

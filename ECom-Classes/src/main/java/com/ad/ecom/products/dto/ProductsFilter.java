@@ -3,17 +3,16 @@ package com.ad.ecom.products.dto;
 import com.ad.ecom.products.stubs.ProductBrand;
 import com.ad.ecom.products.stubs.ProductCategory;
 import com.ad.ecom.products.stubs.ProductSubCategory;
-import com.ad.ecom.util.DataRange;
+import com.ad.ecom.common.DataRange;
 import lombok.*;
 
 import java.io.Serializable;
 import java.util.List;
 
-@Getter
-@Setter
-@ToString
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ProductsFilter implements Serializable {
     private String productName;
     private List<ProductCategory> productCategories;

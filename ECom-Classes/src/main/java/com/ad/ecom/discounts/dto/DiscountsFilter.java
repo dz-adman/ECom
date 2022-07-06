@@ -2,17 +2,16 @@ package com.ad.ecom.discounts.dto;
 
 import com.ad.ecom.common.stub.EComDate;
 import com.ad.ecom.discounts.stubs.DiscountStatus;
-import com.ad.ecom.util.DataRange;
+import com.ad.ecom.common.DataRange;
 import lombok.*;
 
 import java.io.Serializable;
 import java.util.List;
 
-@Getter
-@Setter
-@ToString
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class DiscountsFilter implements Serializable {
     private List<String> discountCodes;
     private List<String> discountNames;

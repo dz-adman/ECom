@@ -11,9 +11,7 @@ import org.hibernate.annotations.Parameter;
 import javax.persistence.*;
 import java.sql.Date;
 
-@Getter
-@Setter
-@ToString
+@Data
 @NoArgsConstructor
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
@@ -49,6 +47,7 @@ public class Discounts {
     @Column(nullable = false)
     private DiscountStatus status;
 
+    @Builder
     public Discounts(String name, Date validFrom, Date validTo, double percentageValue, DiscountStatus status) {
         this.name = name;
         this.validFrom = validFrom;

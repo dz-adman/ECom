@@ -7,9 +7,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 
-@Getter
-@Setter
-@ToString
+@Data
 @NoArgsConstructor
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
@@ -46,6 +44,7 @@ public class Address {
 
     private String landmark;
 
+    @Builder
     public Address(long userId, AddressType addressType, boolean defaultAddress, String address, String city, String state, String country, int pinCode, String landmark) {
         this.userId = userId;
         this.addressType = addressType;

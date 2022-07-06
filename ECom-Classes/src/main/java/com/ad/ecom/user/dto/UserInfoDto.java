@@ -7,11 +7,10 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-@ToString
+@Builder
 public class UserInfoDto {
     private long userId;
     @NotNull @NotBlank @NotEmpty
