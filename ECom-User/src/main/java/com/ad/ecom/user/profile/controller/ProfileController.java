@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpSession;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -21,6 +22,7 @@ public class ProfileController {
     @Autowired
     private ProfileService profileService;
 
+    @RolesAllowed({"USER", "ADMIN", "SELLER"})
     @GetMapping(path = "/info/fetch")
     public ResponseEntity<ResponseMessage> getUserAccountInfo() {
         return profileService.getUserAccountInfo();

@@ -32,7 +32,9 @@ public class EcomSecurityConfig extends WebSecurityConfigurerAdapter {
             "/registration/**",
             // Swagger UI v3 (OpenAPI)
             "/v3/api-docs/**",
-            "/swagger-ui/**"
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/actuator/**"
     };
     @Override
     protected void configure(HttpSecurity http) throws Exception {
