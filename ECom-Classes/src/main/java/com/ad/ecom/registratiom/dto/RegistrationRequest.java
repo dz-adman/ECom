@@ -1,6 +1,6 @@
-package com.ad.ecom.core.registration.dto;
+package com.ad.ecom.registratiom.dto;
 
-import com.ad.ecom.core.ecomuser.stubs.Role;
+import com.ad.ecom.ecomuser.stubs.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -1,6 +1,6 @@
 package com.ad.ecom.core.context;
 
-import com.ad.ecom.core.ecomuser.persistance.EcomUser;
+import com.ad.ecom.ecomuser.persistance.EcomUser;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

@@ -1,5 +1,5 @@
 INSERT INTO ECOM_USER (id, first_name, last_name, login_id, email, password, role, locked, enabled, deleted) VALUES
-(1, 'A', 'D', 'adman', 'amdan@gmail.com', '$2a$10$hhRtjhjghLZq.XiiHMs.oOPE3bQVVa3YeHTpxHhJacVWUCtxQBOOC', 0, 0, 1, 0),
+(1, 'A', 'D', 'adman', 'adman0596@gmail.com', '$2a$10$hhRtjhjghLZq.XiiHMs.oOPE3bQVVa3YeHTpxHhJacVWUCtxQBOOC', 0, 0, 1, 0),
 (2, 'A', 'D', 'user1', 'user1@gmail.com', '$2a$10$hhRtjhjghLZq.XiiHMs.oOPE3bQVVa3YeHTpxHhJacVWUCtxQBOOC', 1, 0, 1, 0),
 (3, 'A', 'D', 'user2', 'user2@gmail.com', '$2a$10$hhRtjhjghLZq.XiiHMs.oOPE3bQVVa3YeHTpxHhJacVWUCtxQBOOC', 1, 0, 1, 0),
 (4, 'A', 'D', 'seller1', 'seller1@gmail.com', '$2a$10$hhRtjhjghLZq.XiiHMs.oOPE3bQVVa3YeHTpxHhJacVWUCtxQBOOC', 2, 0, 1, 0),

@@ -1,6 +1,5 @@
-package com.ad.ecom.core.registration.util.emailEvent;
+package com.ad.ecom.user.profile.util.emailEvent;
 
-import com.ad.ecom.core.util.WebTemplates;
 import com.ad.ecom.ecomuser.persistance.EcomUser;
 import com.ad.ecom.registratiom.persistance.VerificationToken;
 import com.ad.ecom.registratiom.repository.VerificationTokenRepository;
@@ -16,12 +15,15 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.Optional;
 import java.util.UUID;
 
 @Component
-public class VerificationEmailEventListener {
+public class ProfileEmailEventsListener {
 
+    private static final String MSG_FORMAT = "Hi %s %s,<br/><br/>We have received an Account-Deletion request for your ECom account.\n" +
+            "Please find your secure token below for confirmation.<br/>" +
+            "<b>%s</b><br/><br/>Please change your password if not done by you.<br/><br/>" +
+            "<b>ECOM Team</b>";
     @Autowired
     private VerificationTokenRepository tokenRepository;
     @Autowired
@@ -30,34 +32,25 @@ public class VerificationEmailEventListener {
     // @EventListener automatically register an ApplicationListener matching the arguments of the method
     @EventListener
     @Async
-    public Boolean confirmRegistration(VerificationEmailEvent event) {
+    public Boolean accountDelTokenGenAndMailSend(AccountDelTokenEmailEvent event) {
         EcomUser user = event.getUser();
+        // Generate and save new token
         String token = UUID.randomUUID().toString();
-        if(!user.isEnabled()) {
-            Optional<VerificationToken> tokenEntry = tokenRepository.findByUser(user);
-            if (tokenEntry.isPresent()) {
-                tokenEntry.get().setToken(token);
-                tokenEntry.get().setGeneratedOn(new Timestamp(Calendar.getInstance().getTime().getTime()));
-                tokenEntry.get().setExpiresOn(tokenEntry.get().generateExpiryDate(15));
-                tokenRepository.save(tokenEntry.get());
-            } else {
-                VerificationToken verificationToken = new VerificationToken();
-                verificationToken.setToken(token);
-                verificationToken.setGeneratedOn(new Timestamp(Calendar.getInstance().getTime().getTime()));
-                verificationToken.setExpiresOn(verificationToken.generateExpiryDate(15));
-                verificationToken.setUsed(false);
-                verificationToken.setUser(event.getUser());
-                tokenRepository.save(verificationToken);
-            }
-        }
-        final String URL = event.getUrl() + "/" + token;
-        String message = WebTemplates.RegistrationConfirmationTemplate(user, URL);
+        VerificationToken verificationToken = new VerificationToken();
+        verificationToken.setToken(token);
+        verificationToken.setGeneratedOn(new Timestamp(Calendar.getInstance().getTime().getTime()));
+        verificationToken.setExpiresOn(verificationToken.generateExpiryDate(15));
+        verificationToken.setUsed(false);
+        verificationToken.setUser(event.getUser());
+        tokenRepository.save(verificationToken);
+
+        String message =  String.format(MSG_FORMAT, user.getFirstName(), user.getLastName(), token);
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
             helper.setFrom(new InternetAddress("support@ecom.com"));
             helper.setTo(new InternetAddress(user.getEmail()));
-            helper.setSubject("ECOM - Account Activation");
+            helper.setSubject("ECOM - Account-Deletion Token");
             helper.setText(message, true);
             mailSender.send(mimeMessage);
         } catch (MessagingException ex) {

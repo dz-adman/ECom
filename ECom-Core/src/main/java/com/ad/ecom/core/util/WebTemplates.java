@@ -1,6 +1,6 @@
-package com.ad.ecom.core.registration.util;
+package com.ad.ecom.core.util;
 
-import com.ad.ecom.core.ecomuser.persistance.EcomUser;
+import com.ad.ecom.ecomuser.persistance.EcomUser;
 import com.ad.ecom.orders.stubs.OrderStatus;
 
 public final class WebTemplates {

@@ -3,21 +3,28 @@ package com.ad.ecom.user.profile.service.impl;
 import com.ad.ecom.common.stub.ResponseMessage;
 import com.ad.ecom.common.stub.ResponseType;
 import com.ad.ecom.core.context.EComUserLoginContext;
-import com.ad.ecom.core.ecomuser.persistance.EcomUser;
-import com.ad.ecom.core.ecomuser.repository.EcomUserRepository;
+import com.ad.ecom.ecomuser.persistance.EcomUser;
+import com.ad.ecom.ecomuser.repository.EcomUserRepository;
+import com.ad.ecom.registratiom.persistance.VerificationToken;
+import com.ad.ecom.registratiom.repository.VerificationTokenRepository;
 import com.ad.ecom.user.dto.AddressDto;
 import com.ad.ecom.user.dto.UserInfoDto;
 import com.ad.ecom.user.persistance.Address;
 import com.ad.ecom.user.profile.service.ProfileService;
+import com.ad.ecom.user.profile.util.emailEvent.AccountDelTokenEmailEvent;
 import com.ad.ecom.user.repository.AddressRepository;
 import com.ad.ecom.user.stubs.AddressType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpSession;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,11 +32,15 @@ import java.util.Optional;
 public class ProfileServiceImpl implements ProfileService {
 
     @Autowired
-    private EcomUserRepository userRepository;
+    private EcomUserRepository userRepo;
     @Autowired
     private EComUserLoginContext eComUserLoginContext;
     @Autowired
-    private AddressRepository addressRepository;
+    private AddressRepository addressRepo;
+    @Autowired
+    private VerificationTokenRepository tokenRepo;
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
     @Override
     public ResponseEntity<ResponseMessage> getUserAccountInfo() {
@@ -37,7 +48,7 @@ public class ProfileServiceImpl implements ProfileService {
         UserInfoDto userInfoDto = new UserInfoDto();
         List<AddressDto> addresses = null;
         EcomUser ecomUser = eComUserLoginContext.getUserInfo();
-        Optional<List<Address>> addressList = addressRepository.findAllByUserId(ecomUser.getId());
+        Optional<List<Address>> addressList = addressRepo.findAllByUserId(ecomUser.getId());
         if(addressList.isPresent() && !addressList.get().isEmpty()) { // At-least 1 Address is there
             addresses = convertAddressesToDto(addressList.get());
             userInfoDto.setAddressInfo(addresses);
@@ -51,32 +62,70 @@ public class ProfileServiceImpl implements ProfileService {
         return new ResponseEntity(responseMessage, HttpStatus.OK);
     }
 
+    /**
+     * Method to update firstName and lastName
+     * @param userInfoDto
+     * @return
+     */
     @Override
     public ResponseEntity<ResponseMessage> updateUserInfo(UserInfoDto userInfoDto) {
         ResponseMessage responseMessage = new ResponseMessage();
         EcomUser user = eComUserLoginContext.getUserInfo();
         user.setFirstName(userInfoDto.getFirstName());
         user.setLastName(userInfoDto.getLastName());
-        userRepository.save(user);
+        userRepo.save(user);
         responseMessage.addResponse(ResponseType.SUCCESS, "Information Updated Successfully.");
         return new ResponseEntity(responseMessage, HttpStatus.OK);
     }
 
-    // TODO: Make changes to apply 2FA by Email
     @Override
-    public ResponseEntity<ResponseMessage> deleteUserAccount(HttpSession httpSession) {
+    public ResponseEntity<ResponseMessage> deleteUserAccount() {
         ResponseMessage responseMessage = new ResponseMessage();
-        Optional<EcomUser> userData = userRepository.findByLoginIdAndDeletedFalse(eComUserLoginContext.getUserInfo().getLoginId());
+        Optional<EcomUser> userData = userRepo.findByLoginIdAndDeletedFalse(eComUserLoginContext.getUserInfo().getLoginId());
         if(userData.isPresent()) {
-            userData.get().setDeleted(true);
-            userRepository.save(userData.get());
-            // End/Invalidate user session
-            httpSession.invalidate();
-            responseMessage.addResponse(ResponseType.SUCCESS, "Account Deleted Successfully.");
+            // send token on user email
+            eventPublisher.publishEvent(new AccountDelTokenEmailEvent(this, userData.get()));
+            responseMessage.addResponse(ResponseType.SUCCESS, "Secure token for Account-Deletion sent to user email");
             return new ResponseEntity(responseMessage, HttpStatus.OK);
         }
         responseMessage.addResponse(ResponseType.ERROR, "Some Error Occurred! Please try again.");
         return new ResponseEntity(responseMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<ResponseMessage> deleteUserAccountConfirmation(HttpSession httpSession, String token) {
+        ResponseMessage responseMessage = new ResponseMessage();
+        Optional<VerificationToken> vToken = tokenRepo.findByToken(token);
+        if(vToken.isEmpty()) {
+            responseMessage.addResponse(ResponseType.ERROR, "Invalid Token!");
+            return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
+        } else {
+            Timestamp currTime = new Timestamp(Calendar.getInstance().getTime().getTime());
+            if(vToken.get().getExpiresOn().compareTo(currTime) <= 0) {
+                responseMessage.addResponse(ResponseType.ERROR, "Token Expired!");
+                return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
+            }
+            if(vToken.get().isUsed()) {
+                responseMessage.addResponse(ResponseType.ERROR, "Token Already Used!");
+                return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
+            }
+            // ELSE IF CONTROL REACHES HERE (Valid Token)
+
+            // Delete Token from table
+            tokenRepo.delete(vToken.get());
+            // Delete User
+            EcomUser user = vToken.get().getUser();
+            user.setDeleted(true);
+            userRepo.save(user);
+
+            // End/Invalidate user session && Remove Auth-Info
+            httpSession.invalidate();
+            SecurityContextHolder.clearContext();
+
+            responseMessage.addResponse(ResponseType.SUCCESS, "Account Deleted Successfully.");
+            return new ResponseEntity(responseMessage, HttpStatus.OK);
+        }
+
     }
 
     // TODO: Complete this method using 2FA by Email
@@ -104,7 +153,7 @@ public class ProfileServiceImpl implements ProfileService {
                 address.setState(addressDto.getState());
                 address.setCountry(addressDto.getCountry());
                 if (addressDto.getLandmark() != null) address.setLandmark(addressDto.getLandmark());
-                addressRepository.save(address);
+                addressRepo.save(address);
                 responseMessage.addResponse(ResponseType.SUCCESS, "Address Added Successfully.");
             } catch (Exception exception) {
                 responseMessage.addResponse(ResponseType.ERROR, "Unable to store Address. Invalid/Insufficient Data.");
@@ -116,10 +165,10 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public ResponseEntity<ResponseMessage> updateAddress(AddressDto addressDto) {
         ResponseMessage responseMessage = new ResponseMessage();
-        Optional<Address> addressData = addressRepository.findById(addressDto.getAddressId());
+        Optional<Address> addressData = addressRepo.findById(addressDto.getAddressId());
         if(addressData.isPresent()) {
             updateAddressParams(addressDto, addressData.get());
-            addressRepository.save(addressData.get());
+            addressRepo.save(addressData.get());
             responseMessage.addResponse(ResponseType.SUCCESS, "Address Information Updated Successfully.");
             return new ResponseEntity(responseMessage, HttpStatus.OK);
         }
@@ -130,8 +179,8 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public ResponseEntity<ResponseMessage> setDefaultAddress(String addressId) {
         ResponseMessage responseMessage = new ResponseMessage();
-        if(addressRepository.existsById(Long.parseLong(addressId))) {
-            Optional<List<Address>> addresses = addressRepository.findAllByUserId(eComUserLoginContext.getUserInfo().getId());
+        if(addressRepo.existsById(Long.parseLong(addressId))) {
+            Optional<List<Address>> addresses = addressRepo.findAllByUserId(eComUserLoginContext.getUserInfo().getId());
             if(addresses.isPresent()) {
                 updateDefaultAddress(addresses.get(), Long.parseLong(addressId));
                 responseMessage.addResponse(ResponseType.SUCCESS, "Default Address Updated Successfully.");
@@ -179,7 +228,7 @@ public class ProfileServiceImpl implements ProfileService {
     private void updateDefaultAddress(List<Address> addresses, long addressId) {
         for(Address address : addresses) {
             address.setDefaultAddress(address.getId() == addressId ? true : false);
-            addressRepository.save(address);
+            addressRepo.save(address);
         }
     }
 }

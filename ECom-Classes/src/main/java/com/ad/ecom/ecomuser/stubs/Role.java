@@ -1,4 +1,4 @@
-package com.ad.ecom.core.ecomuser.stubs;
+package com.ad.ecom.ecomuser.stubs;
 
 import java.util.HashMap;
 import java.util.Map;

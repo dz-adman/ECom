@@ -1,7 +1,7 @@
 package com.ad.ecom.core.registration.controller;
 
 import com.ad.ecom.common.stub.ResponseMessage;
-import com.ad.ecom.core.registration.dto.RegistrationRequest;
+import com.ad.ecom.registratiom.dto.RegistrationRequest;
 import com.ad.ecom.core.registration.service.RegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;

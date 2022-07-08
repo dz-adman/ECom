@@ -1,15 +1,11 @@
-package com.ad.ecom.core.registration.persistance;
+package com.ad.ecom.registratiom.persistance;
 
-import com.ad.ecom.core.ecomuser.persistance.EcomUser;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.ad.ecom.ecomuser.persistance.EcomUser;
+import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -19,6 +15,7 @@ public class VerificationToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Setter(AccessLevel.NONE)
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -29,20 +26,20 @@ public class VerificationToken {
     private EcomUser user;
 
     @Column(nullable = false)
-    private Date generatedOn;
+    private Timestamp generatedOn;
 
     @Column(nullable = false)
-    private Date expiresOn;
+    private Timestamp expiresOn;
 
     @Column(nullable = false)
     private boolean used = false;
 
     @Builder
-    public Date calculateExpiryDate(int expiryTimeInMinutes) {
+    public Timestamp generateExpiryDate(int expiryTimeInMinutes) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Timestamp(cal.getTime().getTime()));
         cal.add(Calendar.MINUTE, expiryTimeInMinutes);
-        return new Date(cal.getTime().getTime());
+        return new Timestamp(cal.getTime().getTime());
     }
 
 }

@@ -1,6 +1,6 @@
-package com.ad.ecom.core.ecomuser.persistance;
+package com.ad.ecom.ecomuser.persistance;
 
-import com.ad.ecom.core.ecomuser.stubs.Role;
+import com.ad.ecom.ecomuser.stubs.Role;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

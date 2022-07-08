@@ -13,7 +13,8 @@ import java.util.List;
 public interface ProfileService {
     ResponseEntity<ResponseMessage> getUserAccountInfo();
     ResponseEntity<ResponseMessage> updateUserInfo(UserInfoDto userInfoDto);
-    ResponseEntity<ResponseMessage> deleteUserAccount(HttpSession httpSession);
+    ResponseEntity<ResponseMessage> deleteUserAccount();
+    ResponseEntity<ResponseMessage> deleteUserAccountConfirmation(HttpSession httpSession, String token);
     ResponseEntity<ResponseMessage> updatePassword();
     ResponseEntity<ResponseMessage> updateEmail();
     ResponseEntity<ResponseMessage> storeAddresses(List<AddressDto> addressList);
