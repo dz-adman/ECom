@@ -1,4 +1,4 @@
-package com.ad.ecom.registratiom.persistance;
+package com.ad.ecom.registration.persistance;
 
 import com.ad.ecom.ecomuser.persistance.EcomUser;
 import lombok.*;

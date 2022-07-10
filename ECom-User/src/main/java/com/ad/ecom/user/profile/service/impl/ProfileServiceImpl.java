@@ -3,17 +3,20 @@ package com.ad.ecom.user.profile.service.impl;
 import com.ad.ecom.common.stub.ResponseMessage;
 import com.ad.ecom.common.stub.ResponseType;
 import com.ad.ecom.core.context.EComUserLoginContext;
+import com.ad.ecom.core.security.PasswordEncoder;
 import com.ad.ecom.ecomuser.persistance.EcomUser;
 import com.ad.ecom.ecomuser.repository.EcomUserRepository;
-import com.ad.ecom.registratiom.persistance.VerificationToken;
-import com.ad.ecom.registratiom.repository.VerificationTokenRepository;
+import com.ad.ecom.registration.persistance.VerificationToken;
+import com.ad.ecom.registration.repository.VerificationTokenRepository;
 import com.ad.ecom.user.dto.AddressDto;
+import com.ad.ecom.user.dto.UpdatePwdEmailReq;
 import com.ad.ecom.user.dto.UserInfoDto;
 import com.ad.ecom.user.persistance.Address;
 import com.ad.ecom.user.profile.service.ProfileService;
-import com.ad.ecom.user.profile.util.emailEvent.AccountDelTokenEmailEvent;
+import com.ad.ecom.user.profile.util.emailEvent.*;
 import com.ad.ecom.user.repository.AddressRepository;
 import com.ad.ecom.user.stubs.AddressType;
+import com.ad.ecom.util.EComUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -109,7 +112,7 @@ public class ProfileServiceImpl implements ProfileService {
                 responseMessage.addResponse(ResponseType.ERROR, "Token Already Used!");
                 return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
             }
-            // ELSE IF CONTROL REACHES HERE (Valid Token)
+            // ELSE (Valid Token)
 
             // Delete Token from table
             tokenRepo.delete(vToken.get());
@@ -128,16 +131,107 @@ public class ProfileServiceImpl implements ProfileService {
 
     }
 
-    // TODO: Complete this method using 2FA by Email
     @Override
     public ResponseEntity<ResponseMessage> updatePassword() {
-        return null;
+        ResponseMessage responseMessage = new ResponseMessage();
+        Optional<EcomUser> userData = userRepo.findByLoginIdAndDeletedFalse(eComUserLoginContext.getUserInfo().getLoginId());
+        if(userData.isPresent()) {
+            // send token on user email
+            eventPublisher.publishEvent(new UpdatePwdTokenEmailEvent(this, userData.get()));
+            responseMessage.addResponse(ResponseType.SUCCESS, "Secure token for Password-Update sent to user email");
+            return new ResponseEntity(responseMessage, HttpStatus.OK);
+        }
+        responseMessage.addResponse(ResponseType.ERROR, "Some Error Occurred! Please try again.");
+        return new ResponseEntity(responseMessage, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    // TODO: Complete this method using 2FA by Email
+    @Override
+    public ResponseEntity<ResponseMessage> updatePasswordConfirmation(HttpSession httpSession, UpdatePwdEmailReq request) {
+        ResponseMessage responseMessage = new ResponseMessage();
+        Optional<VerificationToken> vToken = tokenRepo.findByToken(request.getSecureToken());
+        if(vToken.isEmpty()) {
+            responseMessage.addResponse(ResponseType.ERROR, "Invalid Token!");
+            return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
+        } else {
+            Timestamp currTime = new Timestamp(Calendar.getInstance().getTime().getTime());
+            if(vToken.get().getExpiresOn().compareTo(currTime) <= 0) {
+                responseMessage.addResponse(ResponseType.ERROR, "Token Expired!");
+                return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
+            }
+            if(vToken.get().isUsed()) {
+                responseMessage.addResponse(ResponseType.ERROR, "Token Already Used!");
+                return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
+            }
+            // ELSE (Valid Token)
+
+            // update user password
+            EcomUser user = vToken.get().getUser();
+            PasswordEncoder passwordEncoder = new PasswordEncoder();
+            user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+            userRepo.save(user);
+
+            // send notification on user mail
+            eventPublisher.publishEvent(new UpdatePwdEmailEvent(this, user));
+
+            // End/Invalidate user session && Remove Auth-Info
+            httpSession.invalidate();
+            SecurityContextHolder.clearContext();
+
+            responseMessage.addResponse(ResponseType.SUCCESS, "Password Updated Successfully.");
+            return new ResponseEntity(responseMessage, HttpStatus.OK);
+        }
+    }
+
+
     @Override
     public ResponseEntity<ResponseMessage> updateEmail() {
-        return null;
+        ResponseMessage responseMessage = new ResponseMessage();
+        Optional<EcomUser> userData = userRepo.findByLoginIdAndDeletedFalse(eComUserLoginContext.getUserInfo().getLoginId());
+        if(userData.isPresent()) {
+            // send token on user email
+            eventPublisher.publishEvent(new UpdateEmailIdTokenEmailEvent(this, userData.get()));
+            responseMessage.addResponse(ResponseType.SUCCESS, "Secure token for EmailId-Update sent to user email");
+            return new ResponseEntity(responseMessage, HttpStatus.OK);
+        }
+        responseMessage.addResponse(ResponseType.ERROR, "Some Error Occurred! Please try again.");
+        return new ResponseEntity(responseMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<ResponseMessage> updateEmailConfirmation(UpdatePwdEmailReq request) {
+        ResponseMessage responseMessage = new ResponseMessage();
+        Optional<VerificationToken> vToken = tokenRepo.findByToken(request.getSecureToken());
+        if(vToken.isEmpty()) {
+            responseMessage.addResponse(ResponseType.ERROR, "Invalid Token!");
+            return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
+        } else {
+            Timestamp currTime = new Timestamp(Calendar.getInstance().getTime().getTime());
+            if(vToken.get().getExpiresOn().compareTo(currTime) <= 0) {
+                responseMessage.addResponse(ResponseType.ERROR, "Token Expired!");
+                return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
+            }
+            if(vToken.get().isUsed()) {
+                responseMessage.addResponse(ResponseType.ERROR, "Token Already Used!");
+                return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
+            }
+            if(!EComUtil.INSTANCE.validateEmail(request.getNewEmailId())) {
+                responseMessage.addResponse(ResponseType.ERROR, "Invalid EmailId!");
+                return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
+            }
+            // ELSE (Valid Token)
+
+            // update user emailId
+            EcomUser user = vToken.get().getUser();
+            String oldEmailId = user.getEmail();
+            user.setEmail(request.getNewEmailId());
+            userRepo.save(user);
+
+            // send notification on user mail
+            eventPublisher.publishEvent(new UpdateEmailIdEmailEvent(this, user.getFirstName(), user.getLastName(), oldEmailId, user.getEmail()));
+
+            responseMessage.addResponse(ResponseType.SUCCESS, "EmailId Updated Successfully.");
+            return new ResponseEntity(responseMessage, HttpStatus.OK);
+        }
     }
 
     @Override

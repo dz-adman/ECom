@@ -1,7 +1,7 @@
-package com.ad.ecom.registratiom.repository;
+package com.ad.ecom.registration.repository;
 
 import com.ad.ecom.ecomuser.persistance.EcomUser;
-import com.ad.ecom.registratiom.persistance.VerificationToken;
+import com.ad.ecom.registration.persistance.VerificationToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;

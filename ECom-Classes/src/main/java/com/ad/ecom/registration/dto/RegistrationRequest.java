@@ -1,4 +1,4 @@
-package com.ad.ecom.registratiom.dto;
+package com.ad.ecom.registration.dto;
 
 import com.ad.ecom.ecomuser.stubs.Role;
 import lombok.AllArgsConstructor;

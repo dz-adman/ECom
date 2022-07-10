@@ -2,6 +2,7 @@ package com.ad.ecom.user.profile.controller;
 
 import com.ad.ecom.common.stub.ResponseMessage;
 import com.ad.ecom.user.dto.AddressDto;
+import com.ad.ecom.user.dto.UpdatePwdEmailReq;
 import com.ad.ecom.user.dto.UserInfoDto;
 import com.ad.ecom.user.profile.service.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,20 +38,31 @@ public class ProfileController {
     public ResponseEntity<ResponseMessage> deleteUserProfile() {
         return profileService.deleteUserAccount();
     }
+
     @GetMapping(path = "/delete/confirm/{token}")
     public ResponseEntity<ResponseMessage> deleteUserProfileConfirmation(HttpSession httpSession, @PathVariable("token") String token) {
         System.out.println(token);
         return profileService.deleteUserAccountConfirmation(httpSession, token);
     }
 
-    @PatchMapping(path = "/update/pwd")
+    @GetMapping(path = "/update/pwd")
     public ResponseEntity<ResponseMessage> updatePassword() {
         return profileService.updatePassword();
     }
 
-    @PatchMapping(path = "/update/email")
+    @PatchMapping(path = "/update/pwd/confirm")
+    public ResponseEntity<ResponseMessage> updatePasswordConfirmation(HttpSession httpSession, @RequestBody UpdatePwdEmailReq request) {
+        return profileService.updatePasswordConfirmation(httpSession, request);
+    }
+
+    @GetMapping(path = "/update/email")
     public ResponseEntity<ResponseMessage> updateEmail() {
         return profileService.updateEmail();
+    }
+
+    @PatchMapping(path = "/update/email/confirm")
+    public ResponseEntity<ResponseMessage> updateEmailConfirmation(@RequestBody UpdatePwdEmailReq request) {
+        return profileService.updateEmailConfirmation(request);
     }
 
     @PostMapping(path = "/add/address")
