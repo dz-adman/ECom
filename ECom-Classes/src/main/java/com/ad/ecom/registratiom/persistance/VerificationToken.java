@@ -10,7 +10,7 @@ import java.util.Calendar;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "ACTIVATION_TOKEN")
+@Entity(name = "VERIFICATION_TOKEN")
 public class VerificationToken {
 
     @Id
@@ -22,7 +22,7 @@ public class VerificationToken {
     private String token;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user", nullable = false)
     private EcomUser user;
 
     @Column(nullable = false)
