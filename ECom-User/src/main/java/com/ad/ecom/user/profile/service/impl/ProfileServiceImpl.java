@@ -37,7 +37,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Autowired
     private EcomUserRepository userRepo;
     @Autowired
-    private EComUserLoginContext eComUserLoginContext;
+    private EComUserLoginContext loginContext;
     @Autowired
     private AddressRepository addressRepo;
     @Autowired
@@ -50,7 +50,7 @@ public class ProfileServiceImpl implements ProfileService {
         ResponseMessage responseMessage = new ResponseMessage();
         UserInfoDto userInfoDto = new UserInfoDto();
         List<AddressDto> addresses = null;
-        EcomUser ecomUser = eComUserLoginContext.getUserInfo();
+        EcomUser ecomUser = loginContext.getUserInfo();
         Optional<List<Address>> addressList = addressRepo.findAllByUserId(ecomUser.getId());
         if(addressList.isPresent() && !addressList.get().isEmpty()) { // At-least 1 Address is there
             addresses = convertAddressesToDto(addressList.get());
@@ -73,7 +73,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public ResponseEntity<ResponseMessage> updateUserInfo(UserInfoDto userInfoDto) {
         ResponseMessage responseMessage = new ResponseMessage();
-        EcomUser user = eComUserLoginContext.getUserInfo();
+        EcomUser user = loginContext.getUserInfo();
         user.setFirstName(userInfoDto.getFirstName());
         user.setLastName(userInfoDto.getLastName());
         userRepo.save(user);
@@ -84,7 +84,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public ResponseEntity<ResponseMessage> deleteUserAccount() {
         ResponseMessage responseMessage = new ResponseMessage();
-        Optional<EcomUser> userData = userRepo.findByLoginIdAndDeletedFalse(eComUserLoginContext.getUserInfo().getLoginId());
+        Optional<EcomUser> userData = userRepo.findByLoginIdAndDeletedFalse(loginContext.getUserInfo().getLoginId());
         if(userData.isPresent()) {
             // send token on user email
             eventPublisher.publishEvent(new AccountDelTokenEmailEvent(this, userData.get()));
@@ -134,7 +134,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public ResponseEntity<ResponseMessage> updatePassword() {
         ResponseMessage responseMessage = new ResponseMessage();
-        Optional<EcomUser> userData = userRepo.findByLoginIdAndDeletedFalse(eComUserLoginContext.getUserInfo().getLoginId());
+        Optional<EcomUser> userData = userRepo.findByLoginIdAndDeletedFalse(loginContext.getUserInfo().getLoginId());
         if(userData.isPresent()) {
             // send token on user email
             eventPublisher.publishEvent(new UpdatePwdTokenEmailEvent(this, userData.get()));
@@ -186,7 +186,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public ResponseEntity<ResponseMessage> updateEmail() {
         ResponseMessage responseMessage = new ResponseMessage();
-        Optional<EcomUser> userData = userRepo.findByLoginIdAndDeletedFalse(eComUserLoginContext.getUserInfo().getLoginId());
+        Optional<EcomUser> userData = userRepo.findByLoginIdAndDeletedFalse(loginContext.getUserInfo().getLoginId());
         if(userData.isPresent()) {
             // send token on user email
             eventPublisher.publishEvent(new UpdateEmailIdTokenEmailEvent(this, userData.get()));
@@ -240,13 +240,16 @@ public class ProfileServiceImpl implements ProfileService {
         for(AddressDto addressDto : addressList) {
             try {
                 Address address = new Address();
-                address.setUserId(eComUserLoginContext.getUserInfo().getId());
+                address.setUserId(loginContext.getUserInfo().getId());
                 address.setAddress(addressDto.getHouseAndStreetNum());
                 address.setAddressType(AddressType.valueOf(addressDto.getAddressType()));
                 address.setCity(addressDto.getCity());
                 address.setState(addressDto.getState());
                 address.setCountry(addressDto.getCountry());
                 if (addressDto.getLandmark() != null) address.setLandmark(addressDto.getLandmark());
+                // If no default address exists, set address to default address
+                Optional<Address> defaultAddr = addressRepo.findByUserIdAndDefaultAddressTrue(loginContext.getUserInfo().getId());
+                if(defaultAddr.isEmpty())   address.setDefaultAddress(true);
                 addressRepo.save(address);
                 responseMessage.addResponse(ResponseType.SUCCESS, "Address Added Successfully.");
             } catch (Exception exception) {
@@ -274,7 +277,7 @@ public class ProfileServiceImpl implements ProfileService {
     public ResponseEntity<ResponseMessage> setDefaultAddress(String addressId) {
         ResponseMessage responseMessage = new ResponseMessage();
         if(addressRepo.existsById(Long.parseLong(addressId))) {
-            Optional<List<Address>> addresses = addressRepo.findAllByUserId(eComUserLoginContext.getUserInfo().getId());
+            Optional<List<Address>> addresses = addressRepo.findAllByUserId(loginContext.getUserInfo().getId());
             if(addresses.isPresent()) {
                 updateDefaultAddress(addresses.get(), Long.parseLong(addressId));
                 responseMessage.addResponse(ResponseType.SUCCESS, "Default Address Updated Successfully.");
