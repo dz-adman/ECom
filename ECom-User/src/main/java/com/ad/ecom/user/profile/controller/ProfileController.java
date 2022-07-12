@@ -29,52 +29,62 @@ public class ProfileController {
         return profileService.getUserAccountInfo();
     }
 
+    @RolesAllowed({"USER", "ADMIN", "SELLER"})
     @PatchMapping(path = "/update")
     public ResponseEntity<ResponseMessage> updateUserInfo(@RequestBody @NotNull UserInfoDto userInfoDto) {
         return profileService.updateUserInfo(userInfoDto);
     }
 
+    @RolesAllowed({"USER", "ADMIN", "SELLER"})
     @GetMapping(path = "/delete")
     public ResponseEntity<ResponseMessage> deleteUserProfile() {
         return profileService.deleteUserAccount();
     }
 
+    @RolesAllowed({"USER", "ADMIN", "SELLER"})
     @GetMapping(path = "/delete/confirm/{token}")
     public ResponseEntity<ResponseMessage> deleteUserProfileConfirmation(HttpSession httpSession, @PathVariable("token") String token) {
         System.out.println(token);
         return profileService.deleteUserAccountConfirmation(httpSession, token);
     }
 
+    @RolesAllowed({"USER", "ADMIN", "SELLER"})
     @GetMapping(path = "/update/pwd")
     public ResponseEntity<ResponseMessage> updatePassword() {
         return profileService.updatePassword();
     }
 
+    @RolesAllowed({"USER", "ADMIN", "SELLER"})
     @PatchMapping(path = "/update/pwd/confirm")
     public ResponseEntity<ResponseMessage> updatePasswordConfirmation(HttpSession httpSession, @RequestBody UpdatePwdEmailReq request) {
         return profileService.updatePasswordConfirmation(httpSession, request);
     }
 
+    @RolesAllowed({"USER", "ADMIN", "SELLER"})
     @GetMapping(path = "/update/email")
     public ResponseEntity<ResponseMessage> updateEmail() {
         return profileService.updateEmail();
     }
 
+    @RolesAllowed({"USER", "ADMIN", "SELLER"})
     @PatchMapping(path = "/update/email/confirm")
     public ResponseEntity<ResponseMessage> updateEmailConfirmation(@RequestBody UpdatePwdEmailReq request) {
         return profileService.updateEmailConfirmation(request);
     }
 
+    @RolesAllowed("USER")
     @PostMapping(path = "/add/address")
     public ResponseEntity<ResponseMessage> storeAddresses(@NotNull @RequestBody List<AddressDto> addressList) {
         return profileService.storeAddresses(addressList);
     }
 
+    @RolesAllowed("USER")
     @PatchMapping(path = "/update/address")
     public ResponseEntity<ResponseMessage> updateAddress(@NotNull @RequestBody AddressDto address) {
         return profileService.updateAddress(address);
     }
 
+    @RolesAllowed("USER")
     @PostMapping(path = "/update/defaultAddress")
     public ResponseEntity<ResponseMessage> setDefaultAddress(@NotNull @NotBlank @NotEmpty @RequestBody String addressId) {
         return profileService.setDefaultAddress(addressId);
