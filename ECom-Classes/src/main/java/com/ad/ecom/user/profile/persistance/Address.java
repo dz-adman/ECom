@@ -1,6 +1,6 @@
-package com.ad.ecom.user.persistance;
+package com.ad.ecom.user.profile.persistance;
 
-import com.ad.ecom.user.stubs.AddressType;
+import com.ad.ecom.user.profile.stubs.AddressType;
 import lombok.*;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;

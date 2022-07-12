@@ -1,4 +1,4 @@
-package com.ad.ecom.user.stubs;
+package com.ad.ecom.user.profile.stubs;
 
 import java.util.HashMap;
 import java.util.Map;

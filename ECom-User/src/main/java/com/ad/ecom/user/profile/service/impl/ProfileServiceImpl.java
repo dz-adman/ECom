@@ -8,14 +8,14 @@ import com.ad.ecom.ecomuser.persistance.EcomUser;
 import com.ad.ecom.ecomuser.repository.EcomUserRepository;
 import com.ad.ecom.registration.persistance.VerificationToken;
 import com.ad.ecom.registration.repository.VerificationTokenRepository;
-import com.ad.ecom.user.dto.AddressDto;
-import com.ad.ecom.user.dto.UpdatePwdEmailReq;
-import com.ad.ecom.user.dto.UserInfoDto;
-import com.ad.ecom.user.persistance.Address;
+import com.ad.ecom.user.profile.dto.AddressDto;
+import com.ad.ecom.user.profile.dto.UpdatePwdEmailReq;
+import com.ad.ecom.user.profile.dto.UserInfoDto;
+import com.ad.ecom.user.profile.persistance.Address;
 import com.ad.ecom.user.profile.service.ProfileService;
 import com.ad.ecom.user.profile.util.emailEvent.*;
-import com.ad.ecom.user.repository.AddressRepository;
-import com.ad.ecom.user.stubs.AddressType;
+import com.ad.ecom.user.profile.repository.AddressRepository;
+import com.ad.ecom.user.profile.stubs.AddressType;
 import com.ad.ecom.util.EComUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -26,10 +26,7 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpSession;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 public class ProfileServiceImpl implements ProfileService {

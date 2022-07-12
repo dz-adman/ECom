@@ -4,7 +4,7 @@ import com.ad.ecom.discounts.repository.DiscountSubscriptionsRepository;
 import com.ad.ecom.orders.stubs.OrderStatus;
 import com.ad.ecom.products.persistance.Products;
 import com.ad.ecom.products.repository.ProductsRepository;
-import com.ad.ecom.user.persistance.Address;
+import com.ad.ecom.user.profile.persistance.Address;
 import lombok.*;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;

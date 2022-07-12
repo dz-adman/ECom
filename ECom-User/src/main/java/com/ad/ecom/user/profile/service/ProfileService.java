@@ -1,9 +1,9 @@
 package com.ad.ecom.user.profile.service;
 
 import com.ad.ecom.common.stub.ResponseMessage;
-import com.ad.ecom.user.dto.AddressDto;
-import com.ad.ecom.user.dto.UpdatePwdEmailReq;
-import com.ad.ecom.user.dto.UserInfoDto;
+import com.ad.ecom.user.profile.dto.AddressDto;
+import com.ad.ecom.user.profile.dto.UpdatePwdEmailReq;
+import com.ad.ecom.user.profile.dto.UserInfoDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 

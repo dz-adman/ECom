@@ -1,6 +1,6 @@
-package com.ad.ecom.user.repository;
+package com.ad.ecom.user.profile.repository;
 
-import com.ad.ecom.user.persistance.Address;
+import com.ad.ecom.user.profile.persistance.Address;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

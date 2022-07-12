@@ -1,4 +1,4 @@
-package com.ad.ecom.user.dto;
+package com.ad.ecom.user.profile.dto;
 
 import lombok.Getter;
 

@@ -21,7 +21,7 @@ import com.ad.ecom.products.persistance.Products;
 import com.ad.ecom.products.repository.ProductsRepository;
 import com.ad.ecom.service.OrdersService;
 import com.ad.ecom.ssm.OrdersSMInterceptor;
-import com.ad.ecom.user.repository.AddressRepository;
+import com.ad.ecom.user.profile.repository.AddressRepository;
 import com.ad.ecom.util.DateConverter;
 import com.ad.ecom.util.SSMUtil;
 import com.ad.ecom.util.emailEvent.OrderStatusUpdateEmailEvent;

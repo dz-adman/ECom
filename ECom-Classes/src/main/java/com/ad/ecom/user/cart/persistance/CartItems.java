@@ -1,4 +1,4 @@
-package com.ad.ecom.cart.persistance;
+package com.ad.ecom.user.cart.persistance;
 
 import com.ad.ecom.products.stubs.ProductStockUnit;
 import lombok.*;

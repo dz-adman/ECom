@@ -1,4 +1,4 @@
-package com.ad.ecom.cart.persistance;
+package com.ad.ecom.user.cart.persistance;
 
 import lombok.*;
 import org.hibernate.annotations.Cache;
