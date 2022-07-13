@@ -1,6 +1,6 @@
 package com.ad.ecom.core.ecomuser.service.impl;
 
-import com.ad.ecom.core.ecomuser.repository.EcomUserRepository;
+import com.ad.ecom.ecomuser.repository.EcomUserRepository;
 import com.ad.ecom.core.ecomuser.service.EComService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

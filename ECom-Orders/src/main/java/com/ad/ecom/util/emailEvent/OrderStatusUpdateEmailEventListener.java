@@ -1,7 +1,7 @@
 package com.ad.ecom.util.emailEvent;
 
-import com.ad.ecom.core.ecomuser.persistance.EcomUser;
-import com.ad.ecom.core.registration.util.WebTemplates;
+import com.ad.ecom.core.util.WebTemplates;
+import com.ad.ecom.ecomuser.persistance.EcomUser;
 import com.ad.ecom.orders.stubs.OrderStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,9 +27,9 @@ public class OrderStatusUpdateEmailEventListener {
 
     private static final String EMAIL_SUBJECT = "ECOM - Status Update for your Order[order id : %s]";
 
-    @Async
     // @EventListener automatically register an ApplicationListener matching the arguments of the method
     @EventListener
+    @Async
     public Boolean sendNotificationMail(OrderStatusUpdateEmailEvent event) {
         EcomUser user = event.getUser();
         long orderId = event.getOrderId();

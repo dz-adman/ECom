@@ -3,7 +3,7 @@ package com.ad.ecom.products.service.impl;
 import com.ad.ecom.common.stub.ResponseMessage;
 import com.ad.ecom.common.stub.ResponseType;
 import com.ad.ecom.core.context.EComUserLoginContext;
-import com.ad.ecom.core.ecomuser.persistance.EcomUser;
+import com.ad.ecom.ecomuser.persistance.EcomUser;
 import com.ad.ecom.discounts.repository.DiscountSubscriptionsRepository;
 import com.ad.ecom.discounts.repository.DiscountsRepository;
 import com.ad.ecom.products.dto.ProductDto;

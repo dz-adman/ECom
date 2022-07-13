@@ -2,27 +2,23 @@ package com.ad.ecom.core.registration.service.impl;
 
 import com.ad.ecom.common.stub.ResponseMessage;
 import com.ad.ecom.common.stub.ResponseType;
-import com.ad.ecom.core.ecomuser.persistance.EcomUser;
-import com.ad.ecom.core.ecomuser.repository.EcomUserRepository;
-import com.ad.ecom.core.registration.dto.RegistrationRequest;
-import com.ad.ecom.core.registration.persistance.VerificationToken;
-import com.ad.ecom.core.registration.repository.VerificationTokenRepository;
-import com.ad.ecom.core.registration.service.EmailValidatorService;
 import com.ad.ecom.core.registration.service.RegistrationService;
+import com.ad.ecom.core.util.WebTemplates;
 import com.ad.ecom.core.registration.util.emailEvent.VerificationEmailEvent;
-import com.ad.ecom.core.registration.util.WebTemplates;
+import com.ad.ecom.ecomuser.persistance.EcomUser;
+import com.ad.ecom.ecomuser.repository.EcomUserRepository;
+import com.ad.ecom.registration.dto.RegistrationRequest;
+import com.ad.ecom.registration.persistance.VerificationToken;
+import com.ad.ecom.registration.repository.VerificationTokenRepository;
+import com.ad.ecom.util.EComUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -36,8 +32,6 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Autowired
     private EcomUserRepository ecomUserRepository;
     @Autowired
-    private EmailValidatorService emailValidatorService;
-    @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
     private ApplicationEventPublisher eventPublisher;
@@ -48,7 +42,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     public ResponseEntity<ResponseMessage> register(RegistrationRequest request) {
-        boolean validEmail = emailValidatorService.validate(request.getEmail());
+        boolean validEmail = EComUtil.INSTANCE.validateEmail(request.getEmail());
         if(!validEmail)
             throw new IllegalStateException("Email Not Valid");
         ResponseMessage respMsg = new ResponseMessage();
@@ -64,7 +58,7 @@ public class RegistrationServiceImpl implements RegistrationService {
                 respMsg.addResponse(ResponseType.SUCCESS, respBody);
                 return new ResponseEntity(respMsg, HttpStatus.CREATED);
             } catch (Exception ex) {
-                respMsg.addResponse(ResponseType.ERROR, "Insufficient Data!");
+                respMsg.addResponse(ResponseType.ERROR, "Internal Error!");
                 return new ResponseEntity(respMsg, HttpStatus.BAD_REQUEST);
             }
         }
@@ -130,13 +124,4 @@ public class RegistrationServiceImpl implements RegistrationService {
         return new ResponseEntity(respMsg, HttpStatus.BAD_REQUEST);
     }
 
-    @Scheduled(cron = "0 0 0 * * *")
-    private synchronized void flushExpiredTokens() {
-        Date dt = new Date(Calendar.getInstance().getTime().getTime());
-        Optional<List<VerificationToken>> tokens = tokenRepository.getExpiredTokens(dt);
-        if(tokens.isPresent()) {
-            tokens.get().stream()
-                    .forEach(t -> tokenRepository.delete(t));
-        }
-    }
 }

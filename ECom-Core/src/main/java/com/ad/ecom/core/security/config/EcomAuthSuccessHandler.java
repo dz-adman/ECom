@@ -1,7 +1,7 @@
 package com.ad.ecom.core.security.config;
 
 import com.ad.ecom.core.context.EComUserLoginContext;
-import com.ad.ecom.core.ecomuser.persistance.EcomUser;
+import com.ad.ecom.ecomuser.persistance.EcomUser;
 import eu.bitwalker.useragentutils.UserAgent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -4,11 +4,10 @@ import lombok.*;
 
 import javax.validation.constraints.NotNull;
 
-@Getter
-@Setter
-@ToString
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class EComDate {
     @NotNull
     private int year;

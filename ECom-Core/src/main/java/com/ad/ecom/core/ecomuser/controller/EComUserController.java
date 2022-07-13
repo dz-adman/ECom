@@ -1,6 +1,6 @@
 package com.ad.ecom.core.ecomuser.controller;
 
-import com.ad.ecom.core.registration.util.WebTemplates;
+import com.ad.ecom.core.util.WebTemplates;
 import io.swagger.v3.oas.annotations.Hidden;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
