@@ -1,6 +1,6 @@
 package com.ad.ecom.discounts.service.impl;
 
-import com.ad.ecom.common.stub.ResponseMessage;
+import com.ad.ecom.common.ResponseMessage;
 import com.ad.ecom.common.stub.ResponseType;
 import com.ad.ecom.discounts.dto.DiscountsDto;
 import com.ad.ecom.discounts.dto.DiscountsFilter;

@@ -1,18 +1,16 @@
 package com.ad.ecom.core.context;
 
 import com.ad.ecom.ecomuser.persistance.EcomUser;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.SessionScope;
 
+import java.util.Collection;
 import java.util.Date;
 
-@Getter
-@Setter
-@ToString
+@Data
 @Component
 @SessionScope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class EComUserLoginContext {
@@ -23,4 +21,5 @@ public class EComUserLoginContext {
     private String loginIp;
     private String loginOs;
     private String referer;
+    private Collection<? extends GrantedAuthority> authorities;
 }

@@ -1,6 +1,6 @@
 package com.ad.ecom.products.service;
 
-import com.ad.ecom.common.stub.ResponseMessage;
+import com.ad.ecom.common.ResponseMessage;
 import com.ad.ecom.products.dto.ProductFullInfo;
 import com.ad.ecom.products.dto.ProductsFilter;
 import org.springframework.http.ResponseEntity;

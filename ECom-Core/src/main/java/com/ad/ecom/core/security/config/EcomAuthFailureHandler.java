@@ -1,10 +1,13 @@
 package com.ad.ecom.core.security.config;
 
+import com.ad.ecom.common.AuthResponse;
+import com.ad.ecom.common.ResponseMessage;
+import com.ad.ecom.common.stub.ResponseType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.DefaultRedirectStrategy;
-import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 import javax.servlet.ServletException;
@@ -15,19 +18,20 @@ import java.io.IOException;
 public class EcomAuthFailureHandler implements AuthenticationFailureHandler {
 
     private final Logger LOGGER = LogManager.getLogger(EcomAuthFailureHandler.class);
-    private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     @Override
-    public void onAuthenticationFailure(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
+    public void onAuthenticationFailure(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException ex) throws IOException, ServletException {
         System.out.println();
-        LOGGER.info("User failed to enter in workspace.\nCause: " + e);
+        LOGGER.info("User failed to enter in workspace.\nCause: " + ex);
         System.out.println();
 
-        try {
-            redirectStrategy.sendRedirect(httpServletRequest, httpServletResponse, "/login?invalid-session=true");
-        } catch (Exception ex) {
-            // TODO Redirect to Error Page
-            ex.printStackTrace();
-        }
+        ResponseMessage responseMessage = new ResponseMessage();
+        AuthResponse authResponse = AuthResponse.builder().isAuthenticated(false).message(ex.getMessage()).build();
+        responseMessage.addResponse(ResponseType.SUCCESS, "AUTH FAILED!");
+        responseMessage.setResponseData(authResponse);
+
+        httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+        ObjectMapper objectMapper = new ObjectMapper();
+        httpServletResponse.getOutputStream().println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(responseMessage));
     }
 }

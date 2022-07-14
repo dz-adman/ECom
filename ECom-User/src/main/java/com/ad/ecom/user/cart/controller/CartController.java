@@ -1,6 +1,6 @@
 package com.ad.ecom.user.cart.controller;
 
-import com.ad.ecom.common.stub.ResponseMessage;
+import com.ad.ecom.common.ResponseMessage;
 import com.ad.ecom.user.cart.service.CartService;
 import com.ad.ecom.user.profile.dto.AddressDto;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,6 @@
 package com.ad.ecom.controller;
 
-import com.ad.ecom.common.stub.ResponseMessage;
+import com.ad.ecom.common.ResponseMessage;
 import com.ad.ecom.orders.dto.OrderInfo;
 import com.ad.ecom.orders.repository.OrdersRepository;
 import com.ad.ecom.service.OrdersService;

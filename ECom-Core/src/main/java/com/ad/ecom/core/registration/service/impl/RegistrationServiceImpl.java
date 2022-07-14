@@ -1,12 +1,13 @@
 package com.ad.ecom.core.registration.service.impl;
 
-import com.ad.ecom.common.stub.ResponseMessage;
+import com.ad.ecom.common.ResponseMessage;
 import com.ad.ecom.common.stub.ResponseType;
 import com.ad.ecom.core.registration.service.RegistrationService;
 import com.ad.ecom.core.util.WebTemplates;
 import com.ad.ecom.core.registration.util.emailEvent.VerificationEmailEvent;
 import com.ad.ecom.ecomuser.persistance.EcomUser;
 import com.ad.ecom.ecomuser.repository.EcomUserRepository;
+import com.ad.ecom.exception.UserAlreadyExistsException;
 import com.ad.ecom.registration.dto.RegistrationRequest;
 import com.ad.ecom.registration.persistance.VerificationToken;
 import com.ad.ecom.registration.repository.VerificationTokenRepository;
@@ -62,8 +63,7 @@ public class RegistrationServiceImpl implements RegistrationService {
                 return new ResponseEntity(respMsg, HttpStatus.BAD_REQUEST);
             }
         }
-        respMsg.addResponse(ResponseType.ERROR, "Email or loginId already exists!");
-        return new ResponseEntity(respMsg, HttpStatus.BAD_REQUEST);
+        throw new UserAlreadyExistsException("User Profile already exists with provided emailId or loginId!");
     }
 
     @Override

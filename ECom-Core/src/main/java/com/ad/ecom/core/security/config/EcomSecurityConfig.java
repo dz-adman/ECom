@@ -1,5 +1,6 @@
 package com.ad.ecom.core.security.config;
 
+import com.ad.ecom.core.exception.EComExceptionHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +27,8 @@ public class EcomSecurityConfig extends WebSecurityConfigurerAdapter {
     private UserDetailsService userDetailsService;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired
+    private EComExceptionHandler eComExceptionHandler;
 
     private static final String[] AUTH_WHITELIST = {
             // ECom Application
@@ -50,6 +53,8 @@ public class EcomSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/user").hasRole("USER")
                 .anyRequest()
                 .authenticated()
+                .and()
+                .exceptionHandling().accessDeniedHandler(eComExceptionHandler)
                 .and()
                 .formLogin()
                 .successHandler(new EcomAuthSuccessHandler())

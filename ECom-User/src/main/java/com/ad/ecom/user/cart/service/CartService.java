@@ -1,6 +1,6 @@
 package com.ad.ecom.user.cart.service;
 
-import com.ad.ecom.common.stub.ResponseMessage;
+import com.ad.ecom.common.ResponseMessage;
 import com.ad.ecom.user.profile.dto.AddressDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
 package com.ad.ecom.core.registration.service;
 
-import com.ad.ecom.common.stub.ResponseMessage;
+import com.ad.ecom.common.ResponseMessage;
 import com.ad.ecom.registration.dto.RegistrationRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

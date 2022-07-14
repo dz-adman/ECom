@@ -1,7 +1,7 @@
 package com.ad.ecom.service.impl;
 
 import com.ad.ecom.common.dto.Item;
-import com.ad.ecom.common.stub.ResponseMessage;
+import com.ad.ecom.common.ResponseMessage;
 import com.ad.ecom.common.stub.ResponseType;
 import com.ad.ecom.core.context.EComUserLoginContext;
 import com.ad.ecom.ecomuser.persistance.EcomUser;

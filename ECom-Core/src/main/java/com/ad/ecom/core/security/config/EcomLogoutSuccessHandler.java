@@ -1,7 +1,13 @@
 package com.ad.ecom.core.security.config;
 
+import com.ad.ecom.common.AuthResponse;
+import com.ad.ecom.common.ResponseMessage;
+import com.ad.ecom.common.stub.ResponseType;
+import com.ad.ecom.ecomuser.persistance.EcomUser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
@@ -24,11 +30,13 @@ public class EcomLogoutSuccessHandler implements LogoutSuccessHandler {
         LOGGER.info(authentication.getDetails());
         System.out.println();
 
-        try {
-            redirectStrategy.sendRedirect(httpServletRequest, httpServletResponse, "/login");
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        ResponseMessage responseMessage = new ResponseMessage();
+        AuthResponse authResponse = AuthResponse.builder().isAuthenticated(false).role(((EcomUser)authentication.getPrincipal()).getRole()).build();
+        responseMessage.addResponse(ResponseType.SUCCESS, "LOGOUT SUCCESS");
+        responseMessage.setResponseData(authResponse);
+
+        httpServletResponse.setStatus(HttpStatus.OK.value());
+        ObjectMapper objectMapper = new ObjectMapper();
+        httpServletResponse.getOutputStream().println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(responseMessage));
     }
 }
