@@ -2,9 +2,11 @@ package com.ad.ecom.ecomuser.persistance;
 
 import com.ad.ecom.ecomuser.stubs.Role;
 import lombok.*;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.hibernate.annotations.Cache;
 
 import javax.persistence.*;
 import java.util.Arrays;
@@ -13,6 +15,8 @@ import java.util.Collection;
 @Data
 @EqualsAndHashCode
 @NoArgsConstructor
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
 @Entity(name = "ECOM_USER")
 public class EcomUser implements UserDetails {
 

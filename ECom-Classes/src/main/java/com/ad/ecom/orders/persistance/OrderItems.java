@@ -2,7 +2,9 @@ package com.ad.ecom.orders.persistance;
 
 import com.ad.ecom.products.stubs.ProductStockUnit;
 import lombok.*;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
@@ -10,6 +12,8 @@ import javax.persistence.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
 @Entity(name = "ECOM_ORDER_ITEMS")
 public class OrderItems {
 

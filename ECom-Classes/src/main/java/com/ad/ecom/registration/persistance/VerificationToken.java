@@ -2,6 +2,8 @@ package com.ad.ecom.registration.persistance;
 
 import com.ad.ecom.ecomuser.persistance.EcomUser;
 import lombok.*;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Cache;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -10,6 +12,8 @@ import java.util.Calendar;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
 @Entity(name = "VERIFICATION_TOKEN")
 public class VerificationToken {
 
