@@ -2,7 +2,7 @@ package com.ad.ecom.products.persistance;
 
 import com.ad.ecom.common.stub.EComDate;
 import com.ad.ecom.discounts.persistance.DiscountSubscription;
-import com.ad.ecom.discounts.repository.DiscountSubscriptionsRepository;
+import com.ad.ecom.discounts.repository.DiscountSubscriptionRepository;
 import com.ad.ecom.products.stubs.*;
 import com.ad.ecom.util.DateConverter;
 import com.ad.ecom.util.SequenceGenerator;
@@ -20,8 +20,8 @@ import java.util.List;
 @AllArgsConstructor
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
-@Entity(name = "ECOM_PRODUCTS")
-public class Products {
+@Entity(name = "ECOM_PRODUCT")
+public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -70,7 +70,7 @@ public class Products {
     private ProductStatus status;
 
     @Builder
-    public Products(String name, ProductCategory category, ProductSubCategory subCategory, ProductBrand brand, double price, long stock, ProductStockUnit stockUnit, long productOwnerId, ProductStatus status, boolean refundable) {
+    public Product(String name, ProductCategory category, ProductSubCategory subCategory, ProductBrand brand, double price, long stock, ProductStockUnit stockUnit, long productOwnerId, ProductStatus status, boolean refundable) {
         this.name = name;
         this.category = category;
         this.subCategory = subCategory;
@@ -83,7 +83,7 @@ public class Products {
         this.refundable = refundable;
     }
 
-    public double getDiscountOnProduct(DiscountSubscriptionsRepository discountSubsRepo) {
+    public double getDiscountOnProduct(DiscountSubscriptionRepository discountSubsRepo) {
         List<DiscountSubscription> subs = discountSubsRepo.findByProductId(this.getId());
         int totalDiscountPercentage = 0;
         for(DiscountSubscription subscription : subs) {

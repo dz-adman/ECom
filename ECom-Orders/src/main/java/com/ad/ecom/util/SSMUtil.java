@@ -1,7 +1,7 @@
 package com.ad.ecom.util;
 
 import com.ad.ecom.orders.persistance.Order;
-import com.ad.ecom.orders.repository.OrdersRepository;
+import com.ad.ecom.orders.repository.OrderRepository;
 import com.ad.ecom.orders.stubs.OrderEvent;
 import com.ad.ecom.orders.stubs.OrderStatus;
 import com.ad.ecom.ssm.OrdersSMInterceptor;
@@ -18,7 +18,7 @@ public enum SSMUtil {
     INSTANCE;
 
     private static final String ORDER_ID = "orderId";
-    public StateMachine<OrderStatus, OrderEvent> buildOrderSSM(long orderId, OrdersRepository ordersRepo,
+    public StateMachine<OrderStatus, OrderEvent> buildOrderSSM(long orderId, OrderRepository ordersRepo,
                                                                StateMachineFactory<OrderStatus, OrderEvent> factory,
                                                                OrdersSMInterceptor smInterceptor) {
         Optional<Order> order = ordersRepo.findById(orderId);

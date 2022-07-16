@@ -2,7 +2,7 @@ package com.ad.ecom.products.controller;
 
 import com.ad.ecom.common.ResponseMessage;
 import com.ad.ecom.products.dto.ProductFullInfo;
-import com.ad.ecom.products.dto.ProductsFilter;
+import com.ad.ecom.products.dto.ProductFilter;
 import com.ad.ecom.products.service.ProductsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -24,7 +24,7 @@ public class ProductsController {
 
     @RolesAllowed("USER")
     @PostMapping(value = "/user/showAll/{pageSize}/{pageNum}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseMessage> fetchProductsForUser(@RequestBody ProductsFilter filter,
+    public ResponseEntity<ResponseMessage> fetchProductsForUser(@RequestBody ProductFilter filter,
                                                                  @PathVariable @Min(value = 1, message = "PageSize too short") @Max(value = 500, message = "Max PageSize limit is 500") int pageSize,
                                                                  @PathVariable @Min(value = 0, message = "Invalid PageNUmber") int pageNum) {
         return productsService.showProductsForUser(filter, pageSize, pageNum);
@@ -32,7 +32,7 @@ public class ProductsController {
 
     @RolesAllowed({"ADMIN", "SELLER"})
     @PostMapping(value = "/owner/showAll/{pageSize}/{pageNum}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseMessage> fetchProductsForOwners(@RequestBody ProductsFilter filter,
+    public ResponseEntity<ResponseMessage> fetchProductsForOwners(@RequestBody ProductFilter filter,
                                                                  @PathVariable @Min(value = 1, message = "PageSize too short") @Max(value = 500, message = "Max PageSize limit is 500") int pageSize,
                                                                  @PathVariable @Min(value = 0, message = "Invalid PageNUmber") int pageNum) throws ClassNotFoundException {
         return productsService.showProductsForOwner(filter, pageSize, pageNum);

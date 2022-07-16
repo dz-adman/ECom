@@ -1,4 +1,4 @@
-package com.ad.ecom.orders.persistance;
+package com.ad.ecom.user.cart.persistance;
 
 import com.ad.ecom.products.stubs.ProductStockUnit;
 import lombok.*;
@@ -10,12 +10,12 @@ import org.hibernate.annotations.OnDeleteAction;
 import javax.persistence.*;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
-@Entity(name = "ECOM_ORDER_ITEMS")
-public class OrderItems {
+@Entity(name = "ECOM_CART_ITEMS")
+public class CartItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +23,7 @@ public class OrderItems {
     private long id;
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Order order;
+    private Cart cart;
     @Column(nullable = false)
     private String itemProductId;
     private String itemProductName;
@@ -33,8 +33,8 @@ public class OrderItems {
     private ProductStockUnit itemUnit;
 
     @Builder
-    public OrderItems(Order order, String itemProductId, String itemProductName, long itemQuantity, ProductStockUnit itemUnit) {
-        this.order = order;
+    public CartItem(Cart cart, String itemProductId, String itemProductName, long itemQuantity, ProductStockUnit itemUnit) {
+        this.cart = cart;
         this.itemProductId = itemProductId;
         this.itemProductName = itemProductName;
         this.itemQuantity = itemQuantity;

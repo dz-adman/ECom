@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface DiscountSubscriptionsRepository extends JpaRepository<DiscountSubscription, Long> {
+public interface DiscountSubscriptionRepository extends JpaRepository<DiscountSubscription, Long> {
     List<DiscountSubscription> findByProductId(long productId);
 }

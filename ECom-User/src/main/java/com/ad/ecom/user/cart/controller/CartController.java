@@ -1,8 +1,8 @@
 package com.ad.ecom.user.cart.controller;
 
 import com.ad.ecom.common.ResponseMessage;
+import com.ad.ecom.user.cart.dto.CartInfo;
 import com.ad.ecom.user.cart.service.CartService;
-import com.ad.ecom.user.profile.dto.AddressDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,18 +16,24 @@ public class CartController {
 
     @Autowired
     private CartService cartService;
+
     @GetMapping("/fetch")
     public ResponseEntity<ResponseMessage> getCart() {
         return cartService.getCart();
     }
 
     @PatchMapping("/update/cartItems")
-    public ResponseEntity<ResponseMessage> updateCartItems() {
-        return cartService.updateCartItems();
+    public ResponseEntity<ResponseMessage> updateCartItems(CartInfo cartInfo) {
+        return cartService.updateCartItems(cartInfo);
     }
 
     @PatchMapping("/update/deliveryAddress")
-    public ResponseEntity<ResponseMessage> changeDeliveryAddress(AddressDto addressDto) {
-        return cartService.changeDeliveryAddress(addressDto);
+    public ResponseEntity<ResponseMessage> changeDeliveryAddress(long addressId) {
+        return cartService.changeDeliveryAddress(addressId);
+    }
+
+    @GetMapping("/checkout/preview")
+    public ResponseEntity<ResponseMessage> checkoutPreview() {
+        return cartService.checkoutPreview();
     }
 }

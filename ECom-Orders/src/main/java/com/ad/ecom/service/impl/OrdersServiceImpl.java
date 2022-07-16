@@ -8,17 +8,17 @@ import com.ad.ecom.ecomuser.persistance.EcomUser;
 import com.ad.ecom.ecomuser.repository.EcomUserRepository;
 import com.ad.ecom.ecomuser.stubs.Role;
 import com.ad.ecom.discounts.persistance.DiscountSubscription;
-import com.ad.ecom.discounts.repository.DiscountSubscriptionsRepository;
+import com.ad.ecom.discounts.repository.DiscountSubscriptionRepository;
 import com.ad.ecom.orders.dto.OrderInfo;
 import com.ad.ecom.orders.dto.OrderTrackingInfo;
 import com.ad.ecom.orders.persistance.Order;
-import com.ad.ecom.orders.persistance.OrderItems;
-import com.ad.ecom.orders.repository.OrderItemsRepository;
-import com.ad.ecom.orders.repository.OrdersRepository;
+import com.ad.ecom.orders.persistance.OrderItem;
+import com.ad.ecom.orders.repository.OrderItemRepository;
+import com.ad.ecom.orders.repository.OrderRepository;
 import com.ad.ecom.orders.stubs.OrderEvent;
 import com.ad.ecom.orders.stubs.OrderStatus;
-import com.ad.ecom.products.persistance.Products;
-import com.ad.ecom.products.repository.ProductsRepository;
+import com.ad.ecom.products.persistance.Product;
+import com.ad.ecom.products.repository.ProductRepository;
 import com.ad.ecom.service.OrdersService;
 import com.ad.ecom.ssm.OrdersSMInterceptor;
 import com.ad.ecom.user.profile.repository.AddressRepository;
@@ -56,26 +56,26 @@ public class OrdersServiceImpl implements OrdersService {
     @Autowired
     private ApplicationEventPublisher eventPublisher;
     @Autowired
-    private ProductsRepository productsRepo;
+    private ProductRepository productsRepo;
     @Autowired
-    private OrdersRepository ordersRepo;
+    private OrderRepository ordersRepo;
     @Autowired
-    private OrderItemsRepository orderItemsRepo;
+    private OrderItemRepository orderItemsRepo;
     @Autowired
     private AddressRepository addressRepo;
     @Autowired
     private EcomUserRepository userRepo;
     @Autowired
-    private DiscountSubscriptionsRepository discountSubsRepo;
+    private DiscountSubscriptionRepository discountSubsRepo;
 
     @Override
     public ResponseEntity<ResponseMessage> initiateOrder(OrderInfo orderInfo) {
         ResponseMessage responseMessage = new ResponseMessage();
         List<Item> items = orderInfo.getItems();
         if (!items.isEmpty()) {
-            List<Products> orderProducts = new ArrayList<>();
+            List<Product> orderProducts = new ArrayList<>();
             for (Item item : items) {
-                Optional<Products> product = productsRepo.findByProductId(item.getItemProductId());
+                Optional<Product> product = productsRepo.findByProductId(item.getItemProductId());
                 if (product.isPresent()) {
                     if (product.get().getStock() < item.getItemQuantity())
                         responseMessage.addResponse(ResponseType.ERROR, product.get().getProductId() + " order quantity is Out-Of-Stock");
@@ -358,12 +358,12 @@ public class OrdersServiceImpl implements OrdersService {
     private Order createNewOrder(OrderInfo orderInfo) {
         Order order = new Order();
         order.setUserId(loginContext.getUserInfo().getId());
-        List<OrderItems> orderItems = orderInfo.getItems().stream().map(i -> OrderItems.builder()
-                                                                                       .itemProductId(i.getItemProductId())
-                                                                                       .itemProductName(i.getItemProductName())
-                                                                                       .itemQuantity(i.getItemQuantity())
-                                                                                       .itemUnit(i.getItemUnit())
-                                                                                       .order(order).build()).collect(Collectors.toList());
+        List<OrderItem> orderItems = orderInfo.getItems().stream().map(i -> OrderItem.builder()
+                                                                                     .itemProductId(i.getItemProductId())
+                                                                                     .itemProductName(i.getItemProductName())
+                                                                                     .itemQuantity(i.getItemQuantity())
+                                                                                     .itemUnit(i.getItemUnit())
+                                                                                     .order(order).build()).collect(Collectors.toList());
         //orderItems.stream().forEach(oi -> orderItemsRepo.save(oi));
         order.setItems(orderItems);
         order.setInitDate(new Date(System.currentTimeMillis()));
@@ -371,14 +371,14 @@ public class OrdersServiceImpl implements OrdersService {
         List<OrderStatus> orderStages = new ArrayList<>(Arrays.asList(OrderStatus.INITIATED));
         order.setOrderStages(orderStages);
         order.setDeliveryAddress(addressRepo.findById(orderInfo.getDeliveryAddressId()).get());
-        Map<Item, Products> itemProductMap = new HashMap<>();
+        Map<Item, Product> itemProductMap = new HashMap<>();
         for (Item item : orderInfo.getItems()) {
-            Optional<Products> product = productsRepo.findByProductId(item.getItemProductId());
+            Optional<Product> product = productsRepo.findByProductId(item.getItemProductId());
             itemProductMap.put(item, product.get());
         }
         order.setSubTotal(itemProductMap.entrySet().stream().mapToDouble(e -> e.getValue().getPrice() * e.getKey().getItemQuantity()).sum());
         double total = 0.0;
-        for (Map.Entry<Item, Products> e : itemProductMap.entrySet()) {
+        for (Map.Entry<Item, Product> e : itemProductMap.entrySet()) {
             List<DiscountSubscription> subscriptions = discountSubsRepo.findByProductId(e.getValue().getId());
             order.setDiscountCodes(subscriptions.stream().map(subs -> subs.getDiscount().getCode()).collect(Collectors.toList()));
             total += (e.getValue().getPrice() - e.getValue().getDiscountOnProduct(discountSubsRepo)) * e.getKey().getItemQuantity();
@@ -397,10 +397,10 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     private void updateInventoryReduceStock(Order order) {
-        for(OrderItems oi : order.getItems()) {
+        for(OrderItem oi : order.getItems()) {
             String pId = oi.getItemProductId();
             long quantity = oi.getItemQuantity();
-            Products product = productsRepo.findByProductId(pId).get();
+            Product product = productsRepo.findByProductId(pId).get();
             product.setStock(product.getStock() - quantity);
             productsRepo.save(product);
         }

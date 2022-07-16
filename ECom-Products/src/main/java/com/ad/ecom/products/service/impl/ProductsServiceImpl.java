@@ -4,14 +4,14 @@ import com.ad.ecom.common.ResponseMessage;
 import com.ad.ecom.common.stub.ResponseType;
 import com.ad.ecom.core.context.EComUserLoginContext;
 import com.ad.ecom.ecomuser.persistance.EcomUser;
-import com.ad.ecom.discounts.repository.DiscountSubscriptionsRepository;
-import com.ad.ecom.discounts.repository.DiscountsRepository;
+import com.ad.ecom.discounts.repository.DiscountSubscriptionRepository;
+import com.ad.ecom.discounts.repository.DiscountRepository;
 import com.ad.ecom.products.dto.ProductDto;
 import com.ad.ecom.products.dto.ProductFullInfo;
-import com.ad.ecom.products.dto.ProductsFilter;
-import com.ad.ecom.products.persistance.Products;
+import com.ad.ecom.products.dto.ProductFilter;
+import com.ad.ecom.products.persistance.Product;
 import com.ad.ecom.products.persistance.QProducts;
-import com.ad.ecom.products.repository.ProductsRepository;
+import com.ad.ecom.products.repository.ProductRepository;
 import com.ad.ecom.products.service.ProductsService;
 import com.ad.ecom.products.stubs.ProductStatus;
 import com.querydsl.core.types.Predicate;
@@ -36,19 +36,19 @@ public class ProductsServiceImpl implements ProductsService {
     private final Logger LOGGER = LogManager.getLogger(ProductsServiceImpl.class);
 
     @Autowired
-    private ProductsRepository productsRepo;
+    private ProductRepository productsRepo;
     @Autowired
     private EComUserLoginContext loginContext;
     @Autowired
-    private DiscountSubscriptionsRepository discountSubsRepo;
+    private DiscountSubscriptionRepository discountSubsRepo;
     @Autowired
-    private DiscountsRepository discountsRepo;
+    private DiscountRepository discountsRepo;
 
 
     @Override
-    public ResponseEntity<ResponseMessage> showProductsForUser(ProductsFilter filter, int pageSize, int pageNum) {
+    public ResponseEntity<ResponseMessage> showProductsForUser(ProductFilter filter, int pageSize, int pageNum) {
         List<ProductDto> productsForUser = new ArrayList<>();
-        List<Products> products = this.fetchFilteredProducts(filter, pageSize, pageNum).toList();
+        List<Product> products = this.fetchFilteredProducts(filter, pageSize, pageNum).toList();
         if(products != null)
             productsForUser = this.convertToProductListForUser(products);
         ResponseMessage respMsg = new ResponseMessage();
@@ -57,9 +57,9 @@ public class ProductsServiceImpl implements ProductsService {
     }
 
     @Override
-    public ResponseEntity<ResponseMessage> showProductsForOwner(ProductsFilter filter, int pageSize, int pageNum) {
+    public ResponseEntity<ResponseMessage> showProductsForOwner(ProductFilter filter, int pageSize, int pageNum) {
         List<ProductFullInfo> productsForOwner = new ArrayList<>();
-        List<Products> products = this.fetchFilteredProducts(filter, pageSize, pageNum).toList();
+        List<Product> products = this.fetchFilteredProducts(filter, pageSize, pageNum).toList();
         if(products != null)
             productsForOwner = this.convertToProductListForOwner(products, loginContext.getUserInfo());
         ResponseMessage respMsg = new ResponseMessage();
@@ -71,12 +71,12 @@ public class ProductsServiceImpl implements ProductsService {
     @Transactional
     public ResponseEntity<ResponseMessage> addProducts(List<ProductFullInfo> productFullInfoList) {
         ResponseMessage responseMessage = new ResponseMessage();
-        List<Products> products;
+        List<Product> products;
         if(productFullInfoList != null) {
             try {
                 products = this.convertToProductList(productFullInfoList);
                 if (!products.isEmpty()) {
-                    for (Products product : products) {
+                    for (Product product : products) {
                         productsRepo.save(product);
                     }
                 } else {
@@ -102,10 +102,10 @@ public class ProductsServiceImpl implements ProductsService {
         ResponseMessage responseMessage = new ResponseMessage();
         if(productFullInfoList != null) {
             try {
-                List<Products> productsToEdit = loadProductsToUpdate(productFullInfoList);
-                List<Products> products = this.convertToProductList(productFullInfoList);
+                List<Product> productsToEdit = loadProductsToUpdate(productFullInfoList);
+                List<Product> products = this.convertToProductList(productFullInfoList);
                 if (!products.isEmpty()) {
-                    for (Products product : products) productsRepo.save(product);
+                    for (Product product : products) productsRepo.save(product);
                 }
                 responseMessage.addResponse(ResponseType.SUCCESS, "Products Update SUCCESSFUL");
                 return  new ResponseEntity(responseMessage, HttpStatus.OK);
@@ -142,8 +142,8 @@ public class ProductsServiceImpl implements ProductsService {
         return new ResponseEntity(responseMessage, HttpStatus.BAD_REQUEST);
     }
 
-    private Page<Products> fetchFilteredProducts(ProductsFilter filter, int pageSize, int pageNum) {
-        Page<Products> products;
+    private Page<Product> fetchFilteredProducts(ProductFilter filter, int pageSize, int pageNum) {
+        Page<Product> products;
         if(filter != null) {
             QProducts qProducts = QProducts.products;
             BooleanExpression brands = Optional.ofNullable(filter.getBrands()).isPresent() ? qProducts.brand.in(filter.getBrands()) : qProducts.brand.isNotNull();
@@ -165,9 +165,9 @@ public class ProductsServiceImpl implements ProductsService {
         return products;
     }
 
-    private List<ProductDto> convertToProductListForUser(List<Products> products) {
+    private List<ProductDto> convertToProductListForUser(List<Product> products) {
         List<ProductDto> productDtoList = new ArrayList<>();
-        for (Products prdct : products) {
+        for (Product prdct : products) {
             if (prdct.getStatus().equals(ProductStatus.ACTIVE)) {
                 double effectivePrice = prdct.getDiscountOnProduct(discountSubsRepo);
                 ProductDto productDto = new ProductDto();
@@ -186,9 +186,9 @@ public class ProductsServiceImpl implements ProductsService {
         return productDtoList;
     }
 
-    private List<ProductFullInfo> convertToProductListForOwner(List<Products> products, EcomUser user) {
+    private List<ProductFullInfo> convertToProductListForOwner(List<Product> products, EcomUser user) {
         List<ProductFullInfo> productFullInfoList = new ArrayList<>();
-        for (Products prdct : products) {
+        for (Product prdct : products) {
             ProductFullInfo product = new ProductFullInfo();
             if (prdct.getProductOwnerId() == user.getId()) {
                 product.setProductId(prdct.getProductId());
@@ -206,11 +206,11 @@ public class ProductsServiceImpl implements ProductsService {
         return productFullInfoList;
     }
 
-    private List<Products> convertToProductList(List<ProductFullInfo> productFullInfoList) {
-        List<Products> products = new ArrayList<>();
+    private List<Product> convertToProductList(List<ProductFullInfo> productFullInfoList) {
+        List<Product> products = new ArrayList<>();
         if (productFullInfoList != null) {
             for (ProductFullInfo prdct : productFullInfoList) {
-                Products product = new Products();
+                Product product = new Product();
                 product.setName(prdct.getName());
                 product.setCategory(prdct.getCategory());
                 product.setSubCategory(prdct.getSubCategory());
@@ -224,10 +224,10 @@ public class ProductsServiceImpl implements ProductsService {
         return products;
     }
 
-    private List<Products> loadProductsToUpdate(List<ProductFullInfo> productFullInfoList) {
-        List<Products> products = new ArrayList<>();
+    private List<Product> loadProductsToUpdate(List<ProductFullInfo> productFullInfoList) {
+        List<Product> products = new ArrayList<>();
         for(ProductFullInfo prdct : productFullInfoList) {
-            Optional<Products> product = productsRepo.findByProductId(prdct.getProductId());
+            Optional<Product> product = productsRepo.findByProductId(prdct.getProductId());
             if(product.isPresent()) products.add(product.get());
         }
         return products;

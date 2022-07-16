@@ -16,7 +16,7 @@ import java.sql.Date;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
 @Entity(name = "ECOM_PRDCT_DISCNT")
-public class Discounts {
+public class Discount {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,7 +48,7 @@ public class Discounts {
     private DiscountStatus status;
 
     @Builder
-    public Discounts(String name, Date validFrom, Date validTo, double percentageValue, DiscountStatus status) {
+    public Discount(String name, Date validFrom, Date validTo, double percentageValue, DiscountStatus status) {
         this.name = name;
         this.validFrom = validFrom;
         this.validTo = validTo;

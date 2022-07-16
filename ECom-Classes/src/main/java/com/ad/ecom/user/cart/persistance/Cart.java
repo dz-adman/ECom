@@ -5,7 +5,6 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +14,7 @@ import java.util.List;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
 @Entity(name = "ECOM_USER_CART")
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"id", "userId"})})
 public class Cart {
 
     @Id
@@ -25,19 +25,16 @@ public class Cart {
     @Column(nullable = false)
     private long userId;
 
+    private long deliveryAddress;
+
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
-    private List<CartItems> items = new ArrayList<>();
-
-    private double subTotal = 0.0;
-
-    private Date lastUpdatedOn;
+    private List<CartItem> items = new ArrayList<>();
 
     @Builder
-    public Cart(long userId, List<CartItems> items, double subTotal, Date lastUpdatedOn) {
+    public Cart(long userId, List<CartItem> items, long deliveryAddress) {
         this.userId = userId;
         this.items = items;
-        this.subTotal = subTotal;
-        this.lastUpdatedOn = lastUpdatedOn;
+        this.deliveryAddress = deliveryAddress;
     }
 }
 

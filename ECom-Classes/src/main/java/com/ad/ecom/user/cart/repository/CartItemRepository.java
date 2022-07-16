@@ -1,9 +1,9 @@
 package com.ad.ecom.user.cart.repository;
 
-import com.ad.ecom.user.cart.persistance.CartItems;
+import com.ad.ecom.user.cart.persistance.CartItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CartItemsRepository extends JpaRepository<CartItems, Long> {
+public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 }

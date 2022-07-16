@@ -1,7 +1,7 @@
 package com.ad.ecom.discounts.persistance;
 
 import com.ad.ecom.discounts.stubs.DiscountStatus;
-import com.ad.ecom.products.persistance.Products;
+import com.ad.ecom.products.persistance.Product;
 import lombok.*;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -23,17 +23,17 @@ public class DiscountSubscription {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
-    private Products product;
+    private Product product;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "discount_id", nullable = false)
-    private Discounts discount;
+    private Discount discount;
 
     @Column(nullable = false)
     private DiscountStatus status;
 
     @Builder
-    public DiscountSubscription(Discounts discount, Products product, DiscountStatus status) {
+    public DiscountSubscription(Discount discount, Product product, DiscountStatus status) {
         this.discount = discount;
         this.product = product;
         this.status = status;
