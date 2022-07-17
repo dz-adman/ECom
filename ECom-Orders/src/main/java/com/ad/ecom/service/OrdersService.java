@@ -1,13 +1,12 @@
 package com.ad.ecom.service;
 
 import com.ad.ecom.common.ResponseMessage;
-import com.ad.ecom.orders.dto.OrderInfo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
 public interface OrdersService {
-    ResponseEntity<ResponseMessage> initiateOrder(OrderInfo orderInfo);
+    ResponseEntity<ResponseMessage> initiateOrder();
     ResponseEntity<ResponseMessage> orderInfo(long orderId);
     ResponseEntity<ResponseMessage> orderPayment(long orderId);
     ResponseEntity<ResponseMessage> initiateShipment(long orderId);
