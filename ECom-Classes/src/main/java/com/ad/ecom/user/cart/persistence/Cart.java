@@ -1,4 +1,4 @@
-package com.ad.ecom.user.cart.persistance;
+package com.ad.ecom.user.cart.persistence;
 
 import lombok.*;
 import org.hibernate.annotations.Cache;
@@ -8,7 +8,8 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Cacheable

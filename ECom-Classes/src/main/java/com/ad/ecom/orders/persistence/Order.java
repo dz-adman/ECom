@@ -1,10 +1,10 @@
-package com.ad.ecom.orders.persistance;
+package com.ad.ecom.orders.persistence;
 
 import com.ad.ecom.discounts.repository.DiscountSubscriptionRepository;
 import com.ad.ecom.orders.stubs.OrderStatus;
-import com.ad.ecom.products.persistance.Product;
+import com.ad.ecom.products.persistence.Product;
 import com.ad.ecom.products.repository.ProductRepository;
-import com.ad.ecom.user.profile.persistance.Address;
+import com.ad.ecom.user.profile.persistence.Address;
 import lombok.*;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;

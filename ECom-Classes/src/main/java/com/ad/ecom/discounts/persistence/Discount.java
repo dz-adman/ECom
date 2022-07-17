@@ -1,4 +1,4 @@
-package com.ad.ecom.discounts.persistance;
+package com.ad.ecom.discounts.persistence;
 
 import com.ad.ecom.discounts.stubs.DiscountStatus;
 import com.ad.ecom.util.SequenceGenerator;
@@ -11,7 +11,8 @@ import org.hibernate.annotations.Parameter;
 import javax.persistence.*;
 import java.sql.Date;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)

@@ -1,14 +1,15 @@
-package com.ad.ecom.discounts.persistance;
+package com.ad.ecom.discounts.persistence;
 
 import com.ad.ecom.discounts.stubs.DiscountStatus;
-import com.ad.ecom.products.persistance.Product;
+import com.ad.ecom.products.persistence.Product;
 import lombok.*;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)

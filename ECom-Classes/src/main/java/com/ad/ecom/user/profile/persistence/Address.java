@@ -1,4 +1,4 @@
-package com.ad.ecom.user.profile.persistance;
+package com.ad.ecom.user.profile.persistence;
 
 import com.ad.ecom.user.profile.stubs.AddressType;
 import lombok.*;
@@ -7,7 +7,8 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)

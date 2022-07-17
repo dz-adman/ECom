@@ -1,16 +1,14 @@
 package com.ad.ecom.orders.dto;
 
 import com.ad.ecom.common.dto.Item;
-import com.ad.ecom.common.stub.EComDate;
+import com.ad.ecom.common.EComDate;
 import com.sun.istack.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

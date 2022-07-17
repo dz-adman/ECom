@@ -1,7 +1,7 @@
-package com.ad.ecom.products.persistance;
+package com.ad.ecom.products.persistence;
 
-import com.ad.ecom.common.stub.EComDate;
-import com.ad.ecom.discounts.persistance.DiscountSubscription;
+import com.ad.ecom.common.EComDate;
+import com.ad.ecom.discounts.persistence.DiscountSubscription;
 import com.ad.ecom.discounts.repository.DiscountSubscriptionRepository;
 import com.ad.ecom.discounts.stubs.DiscountStatus;
 import com.ad.ecom.products.stubs.*;
@@ -18,7 +18,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Cacheable

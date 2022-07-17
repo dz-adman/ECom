@@ -1,6 +1,6 @@
-package com.ad.ecom.registration.persistance;
+package com.ad.ecom.registration.persistence;
 
-import com.ad.ecom.ecomuser.persistance.EcomUser;
+import com.ad.ecom.ecomuser.persistence.EcomUser;
 import lombok.*;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cache;
@@ -9,7 +9,8 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Cacheable

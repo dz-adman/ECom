@@ -1,8 +1,8 @@
 package com.ad.ecom.core.registration.util.emailEvent;
 
 import com.ad.ecom.core.util.WebTemplates;
-import com.ad.ecom.ecomuser.persistance.EcomUser;
-import com.ad.ecom.registration.persistance.VerificationToken;
+import com.ad.ecom.ecomuser.persistence.EcomUser;
+import com.ad.ecom.registration.persistence.VerificationToken;
 import com.ad.ecom.registration.repository.VerificationTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;

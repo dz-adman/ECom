@@ -1,10 +1,12 @@
-package com.ad.ecom.common.stub;
+package com.ad.ecom.common;
 
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
 
-@Data
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

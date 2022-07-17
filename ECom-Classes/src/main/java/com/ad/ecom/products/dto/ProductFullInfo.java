@@ -6,7 +6,8 @@ import lombok.*;
 import javax.validation.constraints.*;
 import java.io.Serializable;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

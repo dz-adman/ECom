@@ -1,6 +1,6 @@
 package com.ad.ecom.ecomuser.repository;
 
-import com.ad.ecom.ecomuser.persistance.EcomUser;
+import com.ad.ecom.ecomuser.persistence.EcomUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

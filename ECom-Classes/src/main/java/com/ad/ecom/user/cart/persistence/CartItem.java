@@ -1,4 +1,4 @@
-package com.ad.ecom.user.cart.persistance;
+package com.ad.ecom.user.cart.persistence;
 
 import com.ad.ecom.products.stubs.ProductStockUnit;
 import lombok.*;
@@ -9,7 +9,8 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Cacheable

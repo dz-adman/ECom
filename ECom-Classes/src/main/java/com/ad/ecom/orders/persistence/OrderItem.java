@@ -1,4 +1,4 @@
-package com.ad.ecom.orders.persistance;
+package com.ad.ecom.orders.persistence;
 
 import com.ad.ecom.products.stubs.ProductStockUnit;
 import lombok.*;

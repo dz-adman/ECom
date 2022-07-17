@@ -1,4 +1,4 @@
-package com.ad.ecom.ecomuser.persistance;
+package com.ad.ecom.ecomuser.persistence;
 
 import com.ad.ecom.ecomuser.stubs.Role;
 import lombok.*;
@@ -12,7 +12,8 @@ import javax.persistence.*;
 import java.util.Arrays;
 import java.util.Collection;
 
-@Data
+@Getter
+@Setter
 @EqualsAndHashCode
 @NoArgsConstructor
 @Cacheable

@@ -1,6 +1,6 @@
 package com.ad.ecom.discounts.dto;
 
-import com.ad.ecom.common.stub.EComDate;
+import com.ad.ecom.common.EComDate;
 import com.ad.ecom.discounts.stubs.DiscountStatus;
 import lombok.*;
 
@@ -9,7 +9,8 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
