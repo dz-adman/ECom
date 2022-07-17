@@ -3,6 +3,7 @@ package com.ad.ecom.products.persistance;
 import com.ad.ecom.common.stub.EComDate;
 import com.ad.ecom.discounts.persistance.DiscountSubscription;
 import com.ad.ecom.discounts.repository.DiscountSubscriptionRepository;
+import com.ad.ecom.discounts.stubs.DiscountStatus;
 import com.ad.ecom.products.stubs.*;
 import com.ad.ecom.util.DateConverter;
 import com.ad.ecom.util.SequenceGenerator;
@@ -13,6 +14,8 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 @Data
@@ -84,15 +87,27 @@ public class Product {
     }
 
     public double getDiscountOnProduct(DiscountSubscriptionRepository discountSubsRepo) {
-        List<DiscountSubscription> subs = discountSubsRepo.findByProductId(this.getId());
-        int totalDiscountPercentage = 0;
-        for(DiscountSubscription subscription : subs) {
-            EComDate validFrom = DateConverter.convertToECcmDate(subscription.getDiscount().getValidFrom());
-            EComDate validUpto = DateConverter.convertToECcmDate(subscription.getDiscount().getValidTo());
-            EComDate currDate = DateConverter.convertToECcmDate(new Date(System.currentTimeMillis()));
-            if(validFrom.ltEq(currDate) && validUpto.gtEq(currDate))
-                totalDiscountPercentage += subscription.getDiscount().getPercentageValue();
-        }
+        List<DiscountSubscription> subs = this.getDiscountsApplicableOnProduct(discountSubsRepo);
+        if(subs.isEmpty()) return 0.0;
+        double totalDiscountPercentage = 0.0;
+        for(DiscountSubscription subscription : subs)
+            totalDiscountPercentage += subscription.getDiscount().getPercentageValue();
         return (totalDiscountPercentage/100.0)*this.getPrice();
+    }
+
+    public List<DiscountSubscription> getDiscountsApplicableOnProduct(DiscountSubscriptionRepository discountSubsRepo) {
+        List<DiscountSubscription> subs = discountSubsRepo.findByProductId(this.getId());
+        // filter and keep only active discount-subscriptions
+        subs.stream().filter(sub -> sub.getStatus().equals(DiscountStatus.ACTIVE));
+        if(subs.isEmpty()) return Collections.emptyList();
+        for(Iterator<DiscountSubscription> itr = subs.iterator(); itr.hasNext();) {
+            DiscountSubscription thisObj = itr.next();
+            EComDate validFrom = DateConverter.convertToECcmDate(thisObj.getDiscount().getValidFrom());
+            EComDate validUpto = DateConverter.convertToECcmDate(thisObj.getDiscount().getValidTo());
+            EComDate currDate = DateConverter.convertToECcmDate(new Date(System.currentTimeMillis()));
+            if(!(validFrom.ltEq(currDate) && validUpto.gtEq(currDate)))
+                itr.remove();
+        }
+        return subs;
     }
 }

@@ -9,7 +9,7 @@ INSERT INTO ECOM_USER_ADDRESS (id, user_id, address_type, default_address, addre
 (1, 2, 0, 1, "#142/1 DSN", "PATIALA", "PUNJAB", "INDIA", 147004, null),
 (2, 3, 0, 1, "#141/1 DSN", "PATIALA", "PUNJAB", "INDIA", 147004, null);
 
-INSERT INTO ECOM_PRODUCTS (id, product_id, name, category, sub_category, brand, price, stock, stock_unit, refundable, refund_percentage, product_owner_id, status) VALUES
+INSERT INTO ECOM_PRODUCT (id, product_id, name, category, sub_category, brand, price, stock, stock_unit, refundable, refund_percentage, product_owner_id, status) VALUES
 (1, "PRDCT_00001", "Brush", 1, 5, 2, 25.00, 10, 0, false, null, 1, 1),
 (2, "PRDCT_00002", "Towel", 1, 5, 2, 250.00, 10, 0, true, 25.0, 1, 1),
 (3, "PRDCT_00003", "Hair Oil", 1, 5, 2, 50.00, 10, 0, true, 10.0, 4, 1),
@@ -28,6 +28,7 @@ INSERT INTO ECOM_PRDCT_DISCNT (id, code, name, valid_from, valid_to, percentage_
 INSERT INTO ECOM_PRDCT_DISCNT_SUBS (id, product_id, discount_id, status) VALUES
 (1, 1, 1, 1),
 (2, 2, 2, 1),
+(9, 2, 3, 1),
 (3, 3, 4, 1),
 (4, 4, 3, 1),
 (5, 5, 4, 1),

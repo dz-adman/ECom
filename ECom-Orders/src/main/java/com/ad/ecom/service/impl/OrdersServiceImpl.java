@@ -1,19 +1,18 @@
 package com.ad.ecom.service.impl;
 
-import com.ad.ecom.common.dto.Item;
 import com.ad.ecom.common.ResponseMessage;
+import com.ad.ecom.common.dto.Item;
 import com.ad.ecom.common.stub.ResponseType;
 import com.ad.ecom.core.context.EComUserLoginContext;
+import com.ad.ecom.discounts.persistance.DiscountSubscription;
+import com.ad.ecom.discounts.repository.DiscountSubscriptionRepository;
 import com.ad.ecom.ecomuser.persistance.EcomUser;
 import com.ad.ecom.ecomuser.repository.EcomUserRepository;
 import com.ad.ecom.ecomuser.stubs.Role;
-import com.ad.ecom.discounts.persistance.DiscountSubscription;
-import com.ad.ecom.discounts.repository.DiscountSubscriptionRepository;
 import com.ad.ecom.orders.dto.OrderInfo;
 import com.ad.ecom.orders.dto.OrderTrackingInfo;
 import com.ad.ecom.orders.persistance.Order;
 import com.ad.ecom.orders.persistance.OrderItem;
-import com.ad.ecom.orders.repository.OrderItemRepository;
 import com.ad.ecom.orders.repository.OrderRepository;
 import com.ad.ecom.orders.stubs.OrderEvent;
 import com.ad.ecom.orders.stubs.OrderStatus;
@@ -21,6 +20,7 @@ import com.ad.ecom.products.persistance.Product;
 import com.ad.ecom.products.repository.ProductRepository;
 import com.ad.ecom.service.OrdersService;
 import com.ad.ecom.ssm.OrdersSMInterceptor;
+import com.ad.ecom.user.profile.persistance.Address;
 import com.ad.ecom.user.profile.repository.AddressRepository;
 import com.ad.ecom.util.DateConverter;
 import com.ad.ecom.util.SSMUtil;
@@ -56,11 +56,9 @@ public class OrdersServiceImpl implements OrdersService {
     @Autowired
     private ApplicationEventPublisher eventPublisher;
     @Autowired
-    private ProductRepository productsRepo;
+    private ProductRepository productRepo;
     @Autowired
     private OrderRepository ordersRepo;
-    @Autowired
-    private OrderItemRepository orderItemsRepo;
     @Autowired
     private AddressRepository addressRepo;
     @Autowired
@@ -75,7 +73,7 @@ public class OrdersServiceImpl implements OrdersService {
         if (!items.isEmpty()) {
             List<Product> orderProducts = new ArrayList<>();
             for (Item item : items) {
-                Optional<Product> product = productsRepo.findByProductId(item.getItemProductId());
+                Optional<Product> product = productRepo.findByProductId(item.getItemProductId());
                 if (product.isPresent()) {
                     if (product.get().getStock() < item.getItemQuantity())
                         responseMessage.addResponse(ResponseType.ERROR, product.get().getProductId() + " order quantity is Out-Of-Stock");
@@ -125,7 +123,6 @@ public class OrdersServiceImpl implements OrdersService {
                                                                             .itemProductName(i.getItemProductName())
                                                                             .itemQuantity(i.getItemQuantity())
                                                                             .itemUnit(i.getItemUnit()).build()).collect(Collectors.toList());
-            System.out.println(order.get().getItems());
             orderInfo.setItems(items);
             orderInfo.setSubTotal(order.get().getSubTotal());
             orderInfo.setTotal(order.get().getTotal());
@@ -364,27 +361,36 @@ public class OrdersServiceImpl implements OrdersService {
                                                                                      .itemQuantity(i.getItemQuantity())
                                                                                      .itemUnit(i.getItemUnit())
                                                                                      .order(order).build()).collect(Collectors.toList());
-        //orderItems.stream().forEach(oi -> orderItemsRepo.save(oi));
         order.setItems(orderItems);
         order.setInitDate(new Date(System.currentTimeMillis()));
         order.setStatus(OrderStatus.PENDING_PAYMENT);
         List<OrderStatus> orderStages = new ArrayList<>(Arrays.asList(OrderStatus.INITIATED));
         order.setOrderStages(orderStages);
-        order.setDeliveryAddress(addressRepo.findById(orderInfo.getDeliveryAddressId()).get());
+
+        if(Optional.ofNullable(orderInfo.getDeliveryAddressId()).isPresent()) {
+            Optional<Address> givenAddress = addressRepo.findById(orderInfo.getDeliveryAddressId());
+            if(givenAddress.isPresent())
+                order.setDeliveryAddress(addressRepo.findById(orderInfo.getDeliveryAddressId()).get());
+        }
+        if(order.getDeliveryAddress() == null)
+            order.setDeliveryAddress(addressRepo.findByUserIdAndDefaultAddressTrue(loginContext.getUserInfo().getId()).get());
+
         Map<Item, Product> itemProductMap = new HashMap<>();
         for (Item item : orderInfo.getItems()) {
-            Optional<Product> product = productsRepo.findByProductId(item.getItemProductId());
+            Optional<Product> product = productRepo.findByProductId(item.getItemProductId());
             itemProductMap.put(item, product.get());
         }
         order.setSubTotal(itemProductMap.entrySet().stream().mapToDouble(e -> e.getValue().getPrice() * e.getKey().getItemQuantity()).sum());
+        List<DiscountSubscription> allSubs = new ArrayList<>();
         double total = 0.0;
         for (Map.Entry<Item, Product> e : itemProductMap.entrySet()) {
-            List<DiscountSubscription> subscriptions = discountSubsRepo.findByProductId(e.getValue().getId());
-            order.setDiscountCodes(subscriptions.stream().map(subs -> subs.getDiscount().getCode()).collect(Collectors.toList()));
+            List<DiscountSubscription> subscriptions = e.getValue().getDiscountsApplicableOnProduct(discountSubsRepo);
+            allSubs.addAll(subscriptions);
             total += (e.getValue().getPrice() - e.getValue().getDiscountOnProduct(discountSubsRepo)) * e.getKey().getItemQuantity();
         }
+        order.setDiscountCodes(allSubs.stream().map(subs -> subs.getDiscount().getCode()).collect(Collectors.toList()));
         order.setTotal(total);
-        order.calculateAndSetRefundableAmountAndFlag(productsRepo, discountSubsRepo);
+        order.calculateAndSetRefundableAmountAndFlag(productRepo, discountSubsRepo);
         order.setPaid(false);
         ordersRepo.save(order);
         return order;
@@ -400,9 +406,9 @@ public class OrdersServiceImpl implements OrdersService {
         for(OrderItem oi : order.getItems()) {
             String pId = oi.getItemProductId();
             long quantity = oi.getItemQuantity();
-            Product product = productsRepo.findByProductId(pId).get();
+            Product product = productRepo.findByProductId(pId).get();
             product.setStock(product.getStock() - quantity);
-            productsRepo.save(product);
+            productRepo.save(product);
         }
     }
 

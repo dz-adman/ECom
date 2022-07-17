@@ -4,6 +4,11 @@ import com.ad.ecom.common.ResponseMessage;
 import com.ad.ecom.common.dto.Item;
 import com.ad.ecom.common.stub.ResponseType;
 import com.ad.ecom.core.context.EComUserLoginContext;
+import com.ad.ecom.discounts.persistance.DiscountSubscription;
+import com.ad.ecom.discounts.repository.DiscountSubscriptionRepository;
+import com.ad.ecom.products.persistance.Product;
+import com.ad.ecom.products.repository.ProductRepository;
+import com.ad.ecom.user.cart.dto.CartCheckoutPreview;
 import com.ad.ecom.user.cart.dto.CartInfo;
 import com.ad.ecom.user.cart.persistance.Cart;
 import com.ad.ecom.user.cart.persistance.CartItem;
@@ -16,8 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -29,6 +33,10 @@ public class CartServiceImpl implements CartService {
     private CartRepository cartRepo;
     @Autowired
     private AddressRepository addressRepo;
+    @Autowired
+    private DiscountSubscriptionRepository discountSubsRepo;
+    @Autowired
+    private ProductRepository productRepo;
 
     @Override
     public ResponseEntity<ResponseMessage> getCart() {
@@ -58,6 +66,11 @@ public class CartServiceImpl implements CartService {
     public ResponseEntity<ResponseMessage> changeDeliveryAddress(long addressId) {
         ResponseMessage responseMessage = new ResponseMessage();
 
+        Optional<Address> address = addressRepo.findByUserIdAndId(loginContext.getUserInfo().getId(), addressId);
+        if(address.isEmpty()) {
+            responseMessage.addResponse(ResponseType.ERROR, "Invalid AddressId");
+            return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
+        }
         Cart cart = fetchCartOrCreateIfAbsent();
         cart.setDeliveryAddress(addressId);
         cartRepo.save(cart);
@@ -68,10 +81,39 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public ResponseEntity<ResponseMessage> checkoutPreview() {
-        return null;
+        ResponseMessage responseMessage = new ResponseMessage();
+
+        Cart cart = fetchCartOrCreateIfAbsent();
+        Map<CartItem, Product> itemProductMap = new HashMap<>();
+        for (CartItem cartItem : cart.getItems()) {
+            Optional<Product> product = productRepo.findByProductId(cartItem.getItemProductId());
+            itemProductMap.put(cartItem, product.get());
+        }
+        double subTotal = itemProductMap.entrySet().stream().mapToDouble(e -> e.getValue().getPrice() * e.getKey().getItemQuantity()).sum();
+        List<DiscountSubscription> allSubs = new ArrayList<>();
+        double total = 0.0;
+        for (Map.Entry<CartItem, Product> e : itemProductMap.entrySet()) {
+            List<DiscountSubscription> subscriptions = e.getValue().getDiscountsApplicableOnProduct(discountSubsRepo);
+            allSubs.addAll(subscriptions);
+            total += (e.getValue().getPrice() - e.getValue().getDiscountOnProduct(discountSubsRepo)) * e.getKey().getItemQuantity();
+        }
+        List<String> discountNames = allSubs.stream().map(subs -> subs.getDiscount().getName()).collect(Collectors.toList());
+
+        CartCheckoutPreview preview = CartCheckoutPreview.builder()
+                                                         .subTotal(subTotal)
+                                                         .total(total)
+                                                         .discountNames(discountNames)
+                                                         .build();
+        responseMessage.addResponse(ResponseType.SUCCESS, "Cart Checkout Preview");
+        responseMessage.setResponseData(preview);
+        return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
 
     private void addItemsToCart(Cart cart, List<Item> items) {
+        if(items.isEmpty()) {
+            cart.setItems(Collections.emptyList());
+            return;
+        }
         List<CartItem> cartItems = items.stream().map(item ->
                 CartItem.builder()
                         .cart(cart)
@@ -94,12 +136,18 @@ public class CartServiceImpl implements CartService {
     }
 
     private CartInfo cartToCartInfo(Cart cart) {
+        long defaultAddress = addressRepo.findByUserIdAndDefaultAddressTrue(cart.getUserId()).get().getId();
+        long deliveryAddress = Optional.ofNullable(cart.getDeliveryAddress()).isPresent() ? cart.getDeliveryAddress() : defaultAddress;
+        if(cart.getItems() == null) return CartInfo.builder()
+                                                   .cartId(cart.getId())
+                                                   .items(Collections.emptyList())
+                                                   .deliveryAddress(deliveryAddress).build();
         List<Item> items = cart.getItems().stream().map(item ->
             Item.builder()
                 .itemProductName(item.getItemProductName())
                 .itemProductId(item.getItemProductId())
                 .itemQuantity(item.getItemQuantity())
                 .itemUnit(item.getItemUnit()).build()).collect(Collectors.toList());
-        return CartInfo.builder().cartId(cart.getId()).items(items).build();
+        return CartInfo.builder().cartId(cart.getId()).items(items).deliveryAddress(deliveryAddress).build();
     }
 }

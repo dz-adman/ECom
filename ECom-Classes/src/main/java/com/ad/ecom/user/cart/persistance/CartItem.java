@@ -14,7 +14,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
-@Entity(name = "ECOM_CART_ITEMS")
+@Entity(name = "ECOM_CART_ITEM")
 public class CartItem {
 
     @Id

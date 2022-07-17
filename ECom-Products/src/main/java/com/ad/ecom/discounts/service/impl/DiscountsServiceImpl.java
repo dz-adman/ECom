@@ -6,7 +6,7 @@ import com.ad.ecom.discounts.dto.DiscountsDto;
 import com.ad.ecom.discounts.dto.DiscountsFilter;
 import com.ad.ecom.discounts.dto.DiscountsObjDto;
 import com.ad.ecom.discounts.persistance.Discount;
-import com.ad.ecom.discounts.persistance.QDiscounts;
+import com.ad.ecom.discounts.persistance.QDiscount;
 import com.ad.ecom.discounts.repository.DiscountRepository;
 import com.ad.ecom.discounts.service.DiscountsService;
 import com.ad.ecom.discounts.stubs.DiscountStatus;
@@ -92,7 +92,7 @@ public class DiscountsServiceImpl implements DiscountsService {
     private Page<Discount> fetchFilteredDiscounts(DiscountsFilter filter, int pageSize, int pageNum) {
         Page<Discount> discounts;
         if(filter != null) {
-            QDiscounts qDiscounts = QDiscounts.discounts;
+            QDiscount qDiscounts = QDiscount.discount;
 
             BooleanExpression discountCodes = Optional.ofNullable(filter.getDiscountCodes()).isPresent() ? qDiscounts.code.in(filter.getDiscountCodes()) : qDiscounts.code.isNotNull();
             BooleanExpression discountNames = Optional.ofNullable(filter.getDiscountNames()).isPresent() ? qDiscounts.name.in(filter.getDiscountNames()) : qDiscounts.name.isNotNull();

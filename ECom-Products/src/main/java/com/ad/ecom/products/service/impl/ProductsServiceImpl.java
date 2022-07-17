@@ -10,7 +10,7 @@ import com.ad.ecom.products.dto.ProductDto;
 import com.ad.ecom.products.dto.ProductFullInfo;
 import com.ad.ecom.products.dto.ProductFilter;
 import com.ad.ecom.products.persistance.Product;
-import com.ad.ecom.products.persistance.QProducts;
+import com.ad.ecom.products.persistance.QProduct;
 import com.ad.ecom.products.repository.ProductRepository;
 import com.ad.ecom.products.service.ProductsService;
 import com.ad.ecom.products.stubs.ProductStatus;
@@ -145,7 +145,7 @@ public class ProductsServiceImpl implements ProductsService {
     private Page<Product> fetchFilteredProducts(ProductFilter filter, int pageSize, int pageNum) {
         Page<Product> products;
         if(filter != null) {
-            QProducts qProducts = QProducts.products;
+            QProduct qProducts = QProduct.product;
             BooleanExpression brands = Optional.ofNullable(filter.getBrands()).isPresent() ? qProducts.brand.in(filter.getBrands()) : qProducts.brand.isNotNull();
             BooleanExpression categories = Optional.ofNullable(filter.getProductCategories()).isPresent() ?
                                            qProducts.category.in(filter.getProductCategories()) : qProducts.category.isNotNull();
