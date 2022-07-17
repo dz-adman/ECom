@@ -72,7 +72,7 @@ public class CartServiceImpl implements CartService {
             return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
         }
         Cart cart = fetchCartOrCreateIfAbsent();
-        cart.setDeliveryAddress(addressId);
+        cart.setDeliveryAddressId(addressId);
         cartRepo.save(cart);
 
         responseMessage.addResponse(ResponseType.SUCCESS, "Delivery Address Updated Successfully");
@@ -128,7 +128,7 @@ public class CartServiceImpl implements CartService {
         Optional<Cart> cartData = cartRepo.findByUserId(loginContext.getUserInfo().getId());
         if(cartData.isEmpty()) {
             Optional<Address> addr = addressRepo.findByUserIdAndDefaultAddressTrue(loginContext.getUserInfo().getId());
-            Cart newCart = Cart.builder().userId(loginContext.getUserInfo().getId()).deliveryAddress(addr.get().getId()).build();
+            Cart newCart = Cart.builder().userId(loginContext.getUserInfo().getId()).deliveryAddressId(addr.get().getId()).build();
             cartRepo.save(newCart);
             return newCart;
         }
@@ -137,7 +137,7 @@ public class CartServiceImpl implements CartService {
 
     private CartInfo cartToCartInfo(Cart cart) {
         long defaultAddress = addressRepo.findByUserIdAndDefaultAddressTrue(cart.getUserId()).get().getId();
-        long deliveryAddress = Optional.ofNullable(cart.getDeliveryAddress()).isPresent() ? cart.getDeliveryAddress() : defaultAddress;
+        long deliveryAddress = Optional.ofNullable(cart.getDeliveryAddressId()).isPresent() ? cart.getDeliveryAddressId() : defaultAddress;
         if(cart.getItems() == null) return CartInfo.builder()
                                                    .cartId(cart.getId())
                                                    .items(Collections.emptyList())

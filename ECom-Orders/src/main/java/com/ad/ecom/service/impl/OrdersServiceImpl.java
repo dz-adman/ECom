@@ -20,6 +20,9 @@ import com.ad.ecom.products.persistence.Product;
 import com.ad.ecom.products.repository.ProductRepository;
 import com.ad.ecom.service.OrdersService;
 import com.ad.ecom.ssm.OrdersSMInterceptor;
+import com.ad.ecom.user.cart.persistence.Cart;
+import com.ad.ecom.user.cart.persistence.CartItem;
+import com.ad.ecom.user.cart.repository.CartRepository;
 import com.ad.ecom.user.profile.persistence.Address;
 import com.ad.ecom.user.profile.repository.AddressRepository;
 import com.ad.ecom.util.DateConverter;
@@ -60,6 +63,8 @@ public class OrdersServiceImpl implements OrdersService {
     @Autowired
     private OrderRepository ordersRepo;
     @Autowired
+    private CartRepository cartRepo;
+    @Autowired
     private AddressRepository addressRepo;
     @Autowired
     private EcomUserRepository userRepo;
@@ -67,44 +72,52 @@ public class OrdersServiceImpl implements OrdersService {
     private DiscountSubscriptionRepository discountSubsRepo;
 
     @Override
-    public ResponseEntity<ResponseMessage> initiateOrder(OrderInfo orderInfo) {
+    public ResponseEntity<ResponseMessage> initiateOrder() {
         ResponseMessage responseMessage = new ResponseMessage();
-        List<Item> items = orderInfo.getItems();
-        if (!items.isEmpty()) {
-            List<Product> orderProducts = new ArrayList<>();
-            for (Item item : items) {
-                Optional<Product> product = productRepo.findByProductId(item.getItemProductId());
-                if (product.isPresent()) {
-                    if (product.get().getStock() < item.getItemQuantity())
-                        responseMessage.addResponse(ResponseType.ERROR, product.get().getProductId() + " order quantity is Out-Of-Stock");
-                    else
-                        orderProducts.add(product.get());
-                }
-                if (product.isEmpty())
-                    responseMessage.addResponse(ResponseType.ERROR, "One or more product not found in our inventory!");
-            }
-            if (responseMessage.getResponses().containsKey(ResponseType.ERROR))
-                return new ResponseEntity(responseMessage, HttpStatus.INTERNAL_SERVER_ERROR);
-            else {  // INITIATE ORDER
-                Order order = this.createNewOrder(orderInfo);
-                // ssm
-                StateMachine<OrderStatus, OrderEvent> sm = SSMUtil.INSTANCE.buildOrderSSM(order.getOrderId(), ordersRepo, factory, smInterceptor);
-                SSMUtil.INSTANCE.processEvent(sm, OrderEvent.PROCESS_ORDER, order);
-
-                // send email for status update
-                sendOrderStatusUpdateMail(order);
-
-                // update orderStages
-                order.addOrderStages(Arrays.asList(OrderStatus.PENDING_PAYMENT));
-                ordersRepo.save(order);
-
-
-                responseMessage.setResponseData(order.getOrderId());
-                responseMessage.addResponse(ResponseType.SUCCESS, "Order Init Success");
-                return new ResponseEntity(responseMessage, HttpStatus.OK);
-            }
+        Optional<Cart> cart = cartRepo.findByUserId(loginContext.getUserInfo().getId());
+        if(cart.isEmpty() || cart.get().getItems().isEmpty()) {
+            responseMessage.addResponse(ResponseType.ERROR, "Cart is Empty");
+            return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity("Order can't be Empty", HttpStatus.INTERNAL_SERVER_ERROR);
+        List<CartItem> items = cart.get().getItems();
+        List<Product> orderProducts = new ArrayList<>();
+        // Check Stock for order items
+        for (CartItem item : items) {
+            Optional<Product> product = productRepo.findByProductId(item.getItemProductId());
+            if (product.isPresent()) {
+                if (product.get().getStock() < item.getItemQuantity())
+                    responseMessage.addResponse(ResponseType.ERROR, product.get().getProductId() + " order quantity is Out-Of-Stock");
+                else
+                    orderProducts.add(product.get());
+            }
+            if (product.isEmpty())
+                responseMessage.addResponse(ResponseType.ERROR, "One or more product not found in our inventory!");
+        }
+        if (responseMessage.getResponses().containsKey(ResponseType.ERROR))
+            return new ResponseEntity(responseMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+        else {  // INITIATE ORDER
+            Order order = this.createNewOrder(cart.get());
+            // ssm
+            StateMachine<OrderStatus, OrderEvent> sm = SSMUtil.INSTANCE.buildOrderSSM(order.getOrderId(), ordersRepo, factory, smInterceptor);
+            SSMUtil.INSTANCE.processEvent(sm, OrderEvent.PROCESS_ORDER, order);
+
+            // send email for status update
+            sendOrderStatusUpdateMail(order);
+
+            // update orderStages
+            order.addOrderStages(Arrays.asList(OrderStatus.PENDING_PAYMENT));
+            ordersRepo.save(order);
+
+            // clear cart
+            cart.get().setItems(Collections.emptyList());
+            // reset delivery address to default address
+            cart.get().setDeliveryAddressId(addressRepo.findByUserIdAndDefaultAddressTrue(loginContext.getUserInfo().getId()).get().getId());
+            cartRepo.save(cart.get());
+
+            responseMessage.setResponseData(order.getOrderId());
+            responseMessage.addResponse(ResponseType.SUCCESS, "Order Init Success");
+            return new ResponseEntity(responseMessage, HttpStatus.OK);
+        }
     }
 
     @Override
@@ -352,10 +365,10 @@ public class OrdersServiceImpl implements OrdersService {
         }
     }
 
-    private Order createNewOrder(OrderInfo orderInfo) {
+    private Order createNewOrder(Cart cart) {
         Order order = new Order();
         order.setUserId(loginContext.getUserInfo().getId());
-        List<OrderItem> orderItems = orderInfo.getItems().stream().map(i -> OrderItem.builder()
+        List<OrderItem> orderItems = cart.getItems().stream().map(i -> OrderItem.builder()
                                                                                      .itemProductId(i.getItemProductId())
                                                                                      .itemProductName(i.getItemProductName())
                                                                                      .itemQuantity(i.getItemQuantity())
@@ -367,23 +380,23 @@ public class OrdersServiceImpl implements OrdersService {
         List<OrderStatus> orderStages = new ArrayList<>(Arrays.asList(OrderStatus.INITIATED));
         order.setOrderStages(orderStages);
 
-        if(Optional.ofNullable(orderInfo.getDeliveryAddressId()).isPresent()) {
-            Optional<Address> givenAddress = addressRepo.findById(orderInfo.getDeliveryAddressId());
+        if(Optional.ofNullable(cart.getDeliveryAddressId()).isPresent()) {
+            Optional<Address> givenAddress = addressRepo.findById(cart.getDeliveryAddressId());
             if(givenAddress.isPresent())
-                order.setDeliveryAddress(addressRepo.findById(orderInfo.getDeliveryAddressId()).get());
+                order.setDeliveryAddress(givenAddress.get());
         }
         if(order.getDeliveryAddress() == null)
             order.setDeliveryAddress(addressRepo.findByUserIdAndDefaultAddressTrue(loginContext.getUserInfo().getId()).get());
 
-        Map<Item, Product> itemProductMap = new HashMap<>();
-        for (Item item : orderInfo.getItems()) {
+        Map<CartItem, Product> itemProductMap = new HashMap<>();
+        for (CartItem item : cart.getItems()) {
             Optional<Product> product = productRepo.findByProductId(item.getItemProductId());
             itemProductMap.put(item, product.get());
         }
         order.setSubTotal(itemProductMap.entrySet().stream().mapToDouble(e -> e.getValue().getPrice() * e.getKey().getItemQuantity()).sum());
         List<DiscountSubscription> allSubs = new ArrayList<>();
         double total = 0.0;
-        for (Map.Entry<Item, Product> e : itemProductMap.entrySet()) {
+        for (Map.Entry<CartItem, Product> e : itemProductMap.entrySet()) {
             List<DiscountSubscription> subscriptions = e.getValue().getDiscountsApplicableOnProduct(discountSubsRepo);
             allSubs.addAll(subscriptions);
             total += (e.getValue().getPrice() - e.getValue().getDiscountOnProduct(discountSubsRepo)) * e.getKey().getItemQuantity();

@@ -26,16 +26,16 @@ public class Cart {
     @Column(nullable = false)
     private long userId;
 
-    private long deliveryAddress;
+    private long deliveryAddressId;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
     private List<CartItem> items = new ArrayList<>();
 
     @Builder
-    public Cart(long userId, List<CartItem> items, long deliveryAddress) {
+    public Cart(long userId, List<CartItem> items, long deliveryAddressId) {
         this.userId = userId;
         this.items = items;
-        this.deliveryAddress = deliveryAddress;
+        this.deliveryAddressId = deliveryAddressId;
     }
 }
 

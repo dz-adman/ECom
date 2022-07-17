@@ -1,7 +1,6 @@
 package com.ad.ecom.controller;
 
 import com.ad.ecom.common.ResponseMessage;
-import com.ad.ecom.orders.dto.OrderInfo;
 import com.ad.ecom.orders.repository.OrderRepository;
 import com.ad.ecom.service.OrdersService;
 import org.apache.logging.log4j.LogManager;
@@ -11,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
-import javax.validation.constraints.NotNull;
 
 @RestController
 @RequestMapping("/orders")
@@ -24,9 +22,9 @@ public class OrdersController {
     private OrderRepository ordersRepo;
 
     @RolesAllowed("USER")
-    @PostMapping("/init")
-    public ResponseEntity<ResponseMessage> initiateOrder(@RequestBody @NotNull OrderInfo orderInfo) {
-        return ordersService.initiateOrder(orderInfo);
+    @GetMapping("/init")
+    public ResponseEntity<ResponseMessage> initiateOrder() {
+        return ordersService.initiateOrder();
     }
 
     @RolesAllowed({"USER", "ADMIN"})
