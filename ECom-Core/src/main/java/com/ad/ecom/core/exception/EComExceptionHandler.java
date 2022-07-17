@@ -39,8 +39,8 @@ public class EComExceptionHandler extends ResponseEntityExceptionHandler impleme
         LOGGER.error(exception.getClass().getName() + " [" + exception.getMessage() + "]");
         exception.printStackTrace();
         ResponseMessage responseMessage = new ResponseMessage();
-        responseMessage.addResponse(ResponseType.ERROR, exception.getMessage());
         responseMessage.addResponse(ResponseType.ERROR, "User Profile Already Exists!");
+        responseMessage.addResponse(ResponseType.ERROR, exception.getMessage());
         return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
     }
 
@@ -64,6 +64,18 @@ public class EComExceptionHandler extends ResponseEntityExceptionHandler impleme
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseMessage> fallBackException(Exception exception) {
         return yate(exception);
+    }
+
+    @ExceptionHandler(InvalidCsrfTokenException.class)
+    public ResponseEntity<ResponseMessage> invalidCsrfTokenExHandler(InvalidCsrfTokenException exception) {
+        LOGGER.error(exception.getClass().getName() + " [" + exception.getMessage() + "]");
+        exception.printStackTrace();
+        ResponseMessage responseMessage = new ResponseMessage();
+        responseMessage.addResponse(ResponseType.ERROR, "Invalid CSRF-Token");
+        AuthResponse authResponse = AuthResponse.builder().isAuthenticated(false)
+                                                .message(exception.getMessage()).build();
+        responseMessage.setResponseData(authResponse);
+        return new ResponseEntity<>(responseMessage, HttpStatus.UNAUTHORIZED);
     }
 
     @Override

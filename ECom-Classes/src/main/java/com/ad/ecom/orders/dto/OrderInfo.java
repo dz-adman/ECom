@@ -23,6 +23,5 @@ public class OrderInfo {
     private double subTotal;
     private double total;
     private double refundAmount;
-    @NotNull
     private long deliveryAddressId;
 }

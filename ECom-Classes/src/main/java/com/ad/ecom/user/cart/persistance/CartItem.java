@@ -14,8 +14,8 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
-@Entity(name = "ECOM_CART_ITEMS")
-public class CartItems {
+@Entity(name = "ECOM_CART_ITEM")
+public class CartItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +33,7 @@ public class CartItems {
     private ProductStockUnit itemUnit;
 
     @Builder
-    public CartItems(Cart cart, String itemProductId, String itemProductName, long itemQuantity, ProductStockUnit itemUnit) {
+    public CartItem(Cart cart, String itemProductId, String itemProductName, long itemQuantity, ProductStockUnit itemUnit) {
         this.cart = cart;
         this.itemProductId = itemProductId;
         this.itemProductName = itemProductName;

@@ -2,7 +2,7 @@ package com.ad.ecom.controller;
 
 import com.ad.ecom.common.ResponseMessage;
 import com.ad.ecom.orders.dto.OrderInfo;
-import com.ad.ecom.orders.repository.OrdersRepository;
+import com.ad.ecom.orders.repository.OrderRepository;
 import com.ad.ecom.service.OrdersService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,7 +21,7 @@ public class OrdersController {
     private OrdersService ordersService;
 
     @Autowired
-    private OrdersRepository ordersRepo;
+    private OrderRepository ordersRepo;
 
     @RolesAllowed("USER")
     @PostMapping("/init")

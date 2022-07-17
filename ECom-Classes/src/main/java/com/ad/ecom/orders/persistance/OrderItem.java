@@ -9,13 +9,14 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
-@Entity(name = "ECOM_ORDER_ITEMS")
-public class OrderItems {
+@Entity(name = "ECOM_ORDER_ITEM")
+public class OrderItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +34,7 @@ public class OrderItems {
     private ProductStockUnit itemUnit;
 
     @Builder
-    public OrderItems(Order order, String itemProductId, String itemProductName, long itemQuantity, ProductStockUnit itemUnit) {
+    public OrderItem(Order order, String itemProductId, String itemProductName, long itemQuantity, ProductStockUnit itemUnit) {
         this.order = order;
         this.itemProductId = itemProductId;
         this.itemProductName = itemProductName;

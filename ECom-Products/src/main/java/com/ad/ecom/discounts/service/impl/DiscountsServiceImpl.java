@@ -5,9 +5,9 @@ import com.ad.ecom.common.stub.ResponseType;
 import com.ad.ecom.discounts.dto.DiscountsDto;
 import com.ad.ecom.discounts.dto.DiscountsFilter;
 import com.ad.ecom.discounts.dto.DiscountsObjDto;
-import com.ad.ecom.discounts.persistance.Discounts;
-import com.ad.ecom.discounts.persistance.QDiscounts;
-import com.ad.ecom.discounts.repository.DiscountsRepository;
+import com.ad.ecom.discounts.persistance.Discount;
+import com.ad.ecom.discounts.persistance.QDiscount;
+import com.ad.ecom.discounts.repository.DiscountRepository;
 import com.ad.ecom.discounts.service.DiscountsService;
 import com.ad.ecom.discounts.stubs.DiscountStatus;
 import com.ad.ecom.util.DateConverter;
@@ -33,14 +33,14 @@ public class DiscountsServiceImpl implements DiscountsService {
     private final Logger LOGGER = LogManager.getLogger(DiscountsServiceImpl.class);
 
     @Autowired
-    private DiscountsRepository discountsRepo;
+    private DiscountRepository discountsRepo;
 
     @Override
     public ResponseEntity<ResponseMessage> addDiscounts(List<DiscountsObjDto> discountObjects) {
         ResponseMessage responseMessage = new ResponseMessage();
         if(!discountObjects.isEmpty()) {
-            List<Discounts> discounts = convertToDiscountsList(discountObjects);
-            for(Discounts d : discounts)    discountsRepo.save(d);
+            List<Discount> discounts = convertToDiscountsList(discountObjects);
+            for(Discount d : discounts)    discountsRepo.save(d);
         }
         responseMessage.addResponse(ResponseType.SUCCESS, "Discounts Saved Successfully");
         return new ResponseEntity(responseMessage, HttpStatus.CREATED);
@@ -49,7 +49,7 @@ public class DiscountsServiceImpl implements DiscountsService {
     @Override
     public ResponseEntity<ResponseMessage> showAllDiscounts(DiscountsFilter filter, int pageSize, int pageNum) {
         ResponseMessage responseMessage = new ResponseMessage();
-        Page<Discounts> discountsPage = fetchFilteredDiscounts(filter, pageSize, pageNum);
+        Page<Discount> discountsPage = fetchFilteredDiscounts(filter, pageSize, pageNum);
         List<DiscountsDto> discounts = convertToDiscountsDtoList(discountsPage);
         responseMessage.setResponseData(discounts);
         return new ResponseEntity(responseMessage, HttpStatus.OK);
@@ -61,7 +61,7 @@ public class DiscountsServiceImpl implements DiscountsService {
         ResponseMessage responseMessage = new ResponseMessage();
         if(!discountObjects.isEmpty()) {
             for(DiscountsDto ddto : discountObjects) {
-                Discounts discount = discountsRepo.findByCode(ddto.getCode());
+                Discount discount = discountsRepo.findByCode(ddto.getCode());
                 updateDiscount(discount, ddto);
                 discountsRepo.save(discount);
             }
@@ -89,10 +89,10 @@ public class DiscountsServiceImpl implements DiscountsService {
         return new ResponseEntity(responseMessage, HttpStatus.BAD_REQUEST);
     }
 
-    private Page<Discounts> fetchFilteredDiscounts(DiscountsFilter filter, int pageSize, int pageNum) {
-        Page<Discounts> discounts;
+    private Page<Discount> fetchFilteredDiscounts(DiscountsFilter filter, int pageSize, int pageNum) {
+        Page<Discount> discounts;
         if(filter != null) {
-            QDiscounts qDiscounts = QDiscounts.discounts;
+            QDiscount qDiscounts = QDiscount.discount;
 
             BooleanExpression discountCodes = Optional.ofNullable(filter.getDiscountCodes()).isPresent() ? qDiscounts.code.in(filter.getDiscountCodes()) : qDiscounts.code.isNotNull();
             BooleanExpression discountNames = Optional.ofNullable(filter.getDiscountNames()).isPresent() ? qDiscounts.name.in(filter.getDiscountNames()) : qDiscounts.name.isNotNull();
@@ -118,10 +118,10 @@ public class DiscountsServiceImpl implements DiscountsService {
         return discounts;
     }
 
-    private List<Discounts> convertToDiscountsList(List<DiscountsObjDto> discountObjects) {
-        List<Discounts> discounts = new ArrayList<>();
+    private List<Discount> convertToDiscountsList(List<DiscountsObjDto> discountObjects) {
+        List<Discount> discounts = new ArrayList<>();
         for(DiscountsObjDto ddto : discountObjects) {
-            Discounts discount = new Discounts();
+            Discount discount = new Discount();
             discount.setName(ddto.getName());
             discount.setValidFrom(DateConverter.convertToDate(ddto.getValidFrom()));
             discount.setValidTo(DateConverter.convertToDate(ddto.getValidTo()));
@@ -131,10 +131,10 @@ public class DiscountsServiceImpl implements DiscountsService {
         return discounts;
     }
 
-    private List<DiscountsDto> convertToDiscountsDtoList(Page<Discounts> discountsPage) {
+    private List<DiscountsDto> convertToDiscountsDtoList(Page<Discount> discountsPage) {
         List<DiscountsDto> discounts = new ArrayList<>();
         if(discountsPage.getNumberOfElements() > 0) {
-            for(Discounts d : discountsPage) {
+            for(Discount d : discountsPage) {
                 DiscountsDto ddto = new DiscountsDto();
                 ddto.setCode(d.getCode());
                 ddto.setName(d.getName());
@@ -148,7 +148,7 @@ public class DiscountsServiceImpl implements DiscountsService {
         return discounts;
     }
 
-    private void updateDiscount(Discounts discount, DiscountsDto ddto) {
+    private void updateDiscount(Discount discount, DiscountsDto ddto) {
         discount.setName(ddto.getName());
         discount.setPercentageValue(ddto.getPercentageValue());
         discount.setValidFrom(DateConverter.convertToDate(ddto.getValidFrom()));

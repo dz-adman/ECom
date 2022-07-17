@@ -1,9 +1,9 @@
 package com.ad.ecom.orders.persistance;
 
-import com.ad.ecom.discounts.repository.DiscountSubscriptionsRepository;
+import com.ad.ecom.discounts.repository.DiscountSubscriptionRepository;
 import com.ad.ecom.orders.stubs.OrderStatus;
-import com.ad.ecom.products.persistance.Products;
-import com.ad.ecom.products.repository.ProductsRepository;
+import com.ad.ecom.products.persistance.Product;
+import com.ad.ecom.products.repository.ProductRepository;
 import com.ad.ecom.user.profile.persistance.Address;
 import lombok.*;
 import org.hibernate.annotations.Cache;
@@ -17,11 +17,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
-@Entity(name = "ECOM_USER_ORDERS")
+@Entity(name = "ECOM_USER_ORDER")
 public class Order {
 
     @Id
@@ -37,7 +38,7 @@ public class Order {
 
     @Column(nullable = false)
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private List<OrderItems> items;
+    private List<OrderItem> items;
 
     private double subTotal;
 
@@ -70,7 +71,7 @@ public class Order {
     private String orderStages;
 
     @Builder
-    public Order(long userId, OrderStatus status, List<OrderItems> items, double subTotal, double total, double refundableAmount, Address deliveryAddress, Boolean paid, Boolean cancelled, Boolean refundable, Boolean refunded, Date initDate, Date completionDate) {
+    public Order(long userId, OrderStatus status, List<OrderItem> items, double subTotal, double total, double refundableAmount, Address deliveryAddress, Boolean paid, Boolean cancelled, Boolean refundable, Boolean refunded, Date initDate, Date completionDate) {
         this.userId = userId;
         this.status = status;
         this.items = items;
@@ -110,10 +111,10 @@ public class Order {
         this.setOrderStages(stages);
     }
 
-    public void calculateAndSetRefundableAmountAndFlag(ProductsRepository productsRepo, DiscountSubscriptionsRepository discountSubsRepo) {
-        List<Optional<Products>> products = this.getItems().stream().map(i -> productsRepo.findByProductId(i.getItemProductId())).collect(Collectors.toList());
+    public void calculateAndSetRefundableAmountAndFlag(ProductRepository productsRepo, DiscountSubscriptionRepository discountSubsRepo) {
+        List<Optional<Product>> products = this.getItems().stream().map(i -> productsRepo.findByProductId(i.getItemProductId())).collect(Collectors.toList());
         double refundAmount = 0.0;
-        for(Optional<Products> p : products) {
+        for(Optional<Product> p : products) {
             if(p.isEmpty()) continue;
             if(p.get().isRefundable()) {
                 double effectivePrice = p.get().getPrice() - p.get().getDiscountOnProduct(discountSubsRepo);

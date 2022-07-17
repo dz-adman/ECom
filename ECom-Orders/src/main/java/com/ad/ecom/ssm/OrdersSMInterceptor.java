@@ -1,7 +1,7 @@
 package com.ad.ecom.ssm;
 
 import com.ad.ecom.orders.persistance.Order;
-import com.ad.ecom.orders.repository.OrdersRepository;
+import com.ad.ecom.orders.repository.OrderRepository;
 import com.ad.ecom.orders.stubs.OrderEvent;
 import com.ad.ecom.orders.stubs.OrderStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ public class OrdersSMInterceptor extends StateMachineInterceptorAdapter<OrderSta
     private static final String ORDER_ID = "orderId";
 
     @Autowired
-    private OrdersRepository ordersRepo;
+    private OrderRepository ordersRepo;
 
     @Override
     public void preStateChange(State<OrderStatus, OrderEvent> state, Message<OrderEvent> message, Transition<OrderStatus, OrderEvent> transition, StateMachine<OrderStatus, OrderEvent> stateMachine, StateMachine<OrderStatus, OrderEvent> rootStateMachine) {

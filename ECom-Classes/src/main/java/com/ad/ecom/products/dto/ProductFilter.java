@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ProductsFilter implements Serializable {
+public class ProductFilter implements Serializable {
     private String productName;
     private List<ProductCategory> productCategories;
     private List<ProductSubCategory> productSubCategories;
