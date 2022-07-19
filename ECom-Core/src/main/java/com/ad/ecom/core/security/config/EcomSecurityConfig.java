@@ -51,6 +51,7 @@ public class EcomSecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .antMatchers("/admin").hasRole("ADMIN")
                 .antMatchers("/user").hasRole("USER")
+                .antMatchers("**").hasAnyRole()
                 .anyRequest()
                 .authenticated()
                 .and()
