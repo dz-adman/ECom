@@ -22,7 +22,7 @@ INSERT INTO ECOM_PRODUCT (id, product_id, name, category, sub_category, brand, p
 INSERT INTO ECOM_PRDCT_DISCNT (id, code, name, valid_from, valid_to, percentage_value, status) VALUES
 (1, "DISCNT_00001", "NEW YEAR", '2022-01-01', '2022-01-7', 2, 1),
 (2, "DISCNT_00002", "ALL TIME", '2022-01-01', '2022-12-31', 5, 1),
-(3, "DISCNT_00003", "ALL TIME", '2022-01-01', '2022-01-31', 2, 1),
+(3, "DISCNT_00003", "NEW YEAR", '2022-01-01', '2022-01-31', 2, 1),
 (4, "DISCNT_00004", "BACK_DATED", DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH), DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY), 2, 0);
 
 INSERT INTO ECOM_PRDCT_DISCNT_SUBS (id, product_id, discount_id, status) VALUES

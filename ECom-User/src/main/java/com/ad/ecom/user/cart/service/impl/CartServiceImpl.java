@@ -55,7 +55,7 @@ public class CartServiceImpl implements CartService {
         ResponseMessage responseMessage = new ResponseMessage();
 
         Cart cart = fetchCartOrCreateIfAbsent();
-        addItemsToCart(cart, cartInfo.getItems());
+        updateCartItems(cart, cartInfo.getItems());
         cartRepo.save(cart);
 
         responseMessage.addResponse(ResponseType.SUCCESS, "Cart updated Successfully");
@@ -109,26 +109,24 @@ public class CartServiceImpl implements CartService {
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
 
-    private void addItemsToCart(Cart cart, List<Item> items) {
-        if(items.isEmpty()) {
-            cart.setItems(Collections.emptyList());
-            return;
-        }
-        List<CartItem> cartItems = items.stream().map(item ->
-                CartItem.builder()
-                        .cart(cart)
-                        .itemProductId(item.getItemProductId())
-                        .itemProductName(item.getItemProductName())
-                        .itemQuantity(item.getItemQuantity())
-                        .itemUnit(item.getItemUnit()).build()).collect(Collectors.toList());
-        cart.setItems(cartItems);
+    private void updateCartItems(Cart cart, List<Item> items) {
+        if(cart.getItems() != null) cart.getItems().clear();
+        List<CartItem> cartItems = items.stream().map(item -> CartItem.builder()
+                .itemProductId(item.getItemProductId())
+                .itemProductName(item.getItemProductName())
+                .itemQuantity(item.getItemQuantity())
+                .itemUnit(item.getItemUnit()).cart(cart).build()).collect(Collectors.toList());
+        cart.getItems().addAll(cartItems);
     }
 
     private Cart fetchCartOrCreateIfAbsent() {
         Optional<Cart> cartData = cartRepo.findByUserId(loginContext.getUserInfo().getId());
         if(cartData.isEmpty()) {
             Optional<Address> addr = addressRepo.findByUserIdAndDefaultAddressTrue(loginContext.getUserInfo().getId());
-            Cart newCart = Cart.builder().userId(loginContext.getUserInfo().getId()).deliveryAddressId(addr.get().getId()).build();
+            Cart newCart = Cart.builder()
+                               .userId(loginContext.getUserInfo().getId())
+                               .items(new ArrayList<>())
+                               .deliveryAddressId(addr.get().getId()).build();
             cartRepo.save(newCart);
             return newCart;
         }
@@ -139,8 +137,7 @@ public class CartServiceImpl implements CartService {
         long defaultAddress = addressRepo.findByUserIdAndDefaultAddressTrue(cart.getUserId()).get().getId();
         long deliveryAddress = Optional.ofNullable(cart.getDeliveryAddressId()).isPresent() ? cart.getDeliveryAddressId() : defaultAddress;
         if(cart.getItems() == null) return CartInfo.builder()
-                                                   .cartId(cart.getId())
-                                                   .items(Collections.emptyList())
+                                                   .cartId(cart.getId()).items(Collections.emptyList())
                                                    .deliveryAddress(deliveryAddress).build();
         List<Item> items = cart.getItems().stream().map(item ->
             Item.builder()
