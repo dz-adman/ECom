@@ -1,17 +1,17 @@
 package com.ad.ecom.user.profile.service.impl;
 
-import com.ad.ecom.common.ResponseMessage;
+import com.ad.ecom.common.dto.ResponseMessage;
 import com.ad.ecom.common.stub.ResponseType;
 import com.ad.ecom.core.context.EComUserLoginContext;
 import com.ad.ecom.core.security.PasswordEncoder;
-import com.ad.ecom.ecomuser.persistence.EcomUser;
+import com.ad.ecom.ecomuser.persistance.EcomUser;
 import com.ad.ecom.ecomuser.repository.EcomUserRepository;
-import com.ad.ecom.registration.persistence.VerificationToken;
+import com.ad.ecom.registration.persistance.VerificationToken;
 import com.ad.ecom.registration.repository.VerificationTokenRepository;
 import com.ad.ecom.user.profile.dto.AddressDto;
 import com.ad.ecom.user.profile.dto.UpdatePwdEmailReq;
 import com.ad.ecom.user.profile.dto.UserInfoDto;
-import com.ad.ecom.user.profile.persistence.Address;
+import com.ad.ecom.user.profile.persistance.Address;
 import com.ad.ecom.user.profile.service.ProfileService;
 import com.ad.ecom.user.profile.util.emailEvent.*;
 import com.ad.ecom.user.profile.repository.AddressRepository;

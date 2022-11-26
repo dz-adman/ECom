@@ -1,6 +1,6 @@
 package com.ad.ecom.user.profile.service;
 
-import com.ad.ecom.common.ResponseMessage;
+import com.ad.ecom.common.dto.ResponseMessage;
 import com.ad.ecom.user.profile.dto.AddressDto;
 import com.ad.ecom.user.profile.dto.UpdatePwdEmailReq;
 import com.ad.ecom.user.profile.dto.UserInfoDto;

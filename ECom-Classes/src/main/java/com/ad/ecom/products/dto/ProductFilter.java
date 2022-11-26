@@ -3,7 +3,7 @@ package com.ad.ecom.products.dto;
 import com.ad.ecom.products.stubs.ProductBrand;
 import com.ad.ecom.products.stubs.ProductCategory;
 import com.ad.ecom.products.stubs.ProductSubCategory;
-import com.ad.ecom.common.DataRange;
+import com.ad.ecom.common.dto.DataRange;
 import lombok.*;
 
 import java.io.Serializable;

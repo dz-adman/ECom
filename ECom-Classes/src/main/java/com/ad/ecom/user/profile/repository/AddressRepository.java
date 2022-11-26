@@ -1,6 +1,6 @@
 package com.ad.ecom.user.profile.repository;
 
-import com.ad.ecom.user.profile.persistence.Address;
+import com.ad.ecom.user.profile.persistance.Address;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

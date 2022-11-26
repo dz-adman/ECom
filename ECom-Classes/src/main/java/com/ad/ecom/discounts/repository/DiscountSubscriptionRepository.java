@@ -1,6 +1,6 @@
 package com.ad.ecom.discounts.repository;
 
-import com.ad.ecom.discounts.persistence.DiscountSubscription;
+import com.ad.ecom.discounts.persistance.DiscountSubscription;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

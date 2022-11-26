@@ -1,6 +1,6 @@
 package com.ad.ecom.discounts.repository;
 
-import com.ad.ecom.discounts.persistence.Discount;
+import com.ad.ecom.discounts.persistance.Discount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.PagingAndSortingRepository;

@@ -1,6 +1,6 @@
 package com.ad.ecom.discounts.dto;
 
-import com.ad.ecom.common.EComDate;
+import com.ad.ecom.common.dto.EComDate;
 import com.ad.ecom.discounts.stubs.DiscountStatus;
 import lombok.*;
 

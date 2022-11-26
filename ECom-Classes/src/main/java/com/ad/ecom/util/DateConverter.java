@@ -1,6 +1,6 @@
 package com.ad.ecom.util;
 
-import com.ad.ecom.common.EComDate;
+import com.ad.ecom.common.dto.EComDate;
 
 import java.sql.Date;
 import java.util.Calendar;
