@@ -1,7 +1,7 @@
 package com.ad.ecom.util.emailEvent;
 
 import com.ad.ecom.core.util.WebTemplates;
-import com.ad.ecom.ecomuser.persistence.EcomUser;
+import com.ad.ecom.ecomuser.persistance.EcomUser;
 import com.ad.ecom.orders.stubs.OrderStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

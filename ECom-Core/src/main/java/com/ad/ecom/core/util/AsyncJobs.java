@@ -1,6 +1,6 @@
 package com.ad.ecom.core.util;
 
-import com.ad.ecom.registration.persistence.VerificationToken;
+import com.ad.ecom.registration.persistance.VerificationToken;
 import com.ad.ecom.registration.repository.VerificationTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;

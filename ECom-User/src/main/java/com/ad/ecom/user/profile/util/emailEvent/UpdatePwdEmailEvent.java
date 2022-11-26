@@ -1,6 +1,6 @@
 package com.ad.ecom.user.profile.util.emailEvent;
 
-import com.ad.ecom.ecomuser.persistence.EcomUser;
+import com.ad.ecom.ecomuser.persistance.EcomUser;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 

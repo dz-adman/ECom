@@ -1,6 +1,6 @@
 package com.ad.ecom.core.context;
 
-import com.ad.ecom.ecomuser.persistence.EcomUser;
+import com.ad.ecom.ecomuser.persistance.EcomUser;
 import lombok.Data;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.security.core.GrantedAuthority;

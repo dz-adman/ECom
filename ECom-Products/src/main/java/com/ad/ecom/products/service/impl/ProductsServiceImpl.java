@@ -1,16 +1,16 @@
 package com.ad.ecom.products.service.impl;
 
-import com.ad.ecom.common.ResponseMessage;
+import com.ad.ecom.common.dto.ResponseMessage;
 import com.ad.ecom.common.stub.ResponseType;
 import com.ad.ecom.core.context.EComUserLoginContext;
 import com.ad.ecom.discounts.repository.DiscountRepository;
 import com.ad.ecom.discounts.repository.DiscountSubscriptionRepository;
-import com.ad.ecom.ecomuser.persistence.EcomUser;
+import com.ad.ecom.ecomuser.persistance.EcomUser;
 import com.ad.ecom.products.dto.ProductDto;
 import com.ad.ecom.products.dto.ProductFilter;
 import com.ad.ecom.products.dto.ProductFullInfo;
-import com.ad.ecom.products.persistence.Product;
-import com.ad.ecom.products.persistence.QProduct;
+import com.ad.ecom.products.persistance.Product;
+import com.ad.ecom.products.persistance.QProduct;
 import com.ad.ecom.products.repository.ProductRepository;
 import com.ad.ecom.products.service.ProductsService;
 import com.ad.ecom.products.stubs.ProductStatus;

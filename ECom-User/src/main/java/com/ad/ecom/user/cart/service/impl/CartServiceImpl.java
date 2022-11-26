@@ -1,20 +1,20 @@
 package com.ad.ecom.user.cart.service.impl;
 
-import com.ad.ecom.common.ResponseMessage;
-import com.ad.ecom.common.dto.Item;
+import com.ad.ecom.common.dto.ResponseMessage;
+import com.ad.ecom.products.dto.Item;
 import com.ad.ecom.common.stub.ResponseType;
 import com.ad.ecom.core.context.EComUserLoginContext;
-import com.ad.ecom.discounts.persistence.DiscountSubscription;
+import com.ad.ecom.discounts.persistance.DiscountSubscription;
 import com.ad.ecom.discounts.repository.DiscountSubscriptionRepository;
-import com.ad.ecom.products.persistence.Product;
+import com.ad.ecom.products.persistance.Product;
 import com.ad.ecom.products.repository.ProductRepository;
 import com.ad.ecom.user.cart.dto.CartCheckoutPreview;
 import com.ad.ecom.user.cart.dto.CartInfo;
-import com.ad.ecom.user.cart.persistence.Cart;
-import com.ad.ecom.user.cart.persistence.CartItem;
+import com.ad.ecom.user.cart.persistance.Cart;
+import com.ad.ecom.user.cart.persistance.CartItem;
 import com.ad.ecom.user.cart.repository.CartRepository;
 import com.ad.ecom.user.cart.service.CartService;
-import com.ad.ecom.user.profile.persistence.Address;
+import com.ad.ecom.user.profile.persistance.Address;
 import com.ad.ecom.user.profile.repository.AddressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

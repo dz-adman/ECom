@@ -1,6 +1,6 @@
 package com.ad.ecom.ssm;
 
-import com.ad.ecom.orders.persistence.Order;
+import com.ad.ecom.orders.persistance.Order;
 import com.ad.ecom.orders.repository.OrderRepository;
 import com.ad.ecom.orders.stubs.OrderEvent;
 import com.ad.ecom.orders.stubs.OrderStatus;

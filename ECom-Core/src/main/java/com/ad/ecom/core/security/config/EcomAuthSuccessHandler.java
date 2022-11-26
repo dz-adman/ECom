@@ -1,10 +1,10 @@
 package com.ad.ecom.core.security.config;
 
-import com.ad.ecom.common.AuthResponse;
-import com.ad.ecom.common.ResponseMessage;
+import com.ad.ecom.common.dto.AuthResponse;
+import com.ad.ecom.common.dto.ResponseMessage;
 import com.ad.ecom.common.stub.ResponseType;
 import com.ad.ecom.core.context.EComUserLoginContext;
-import com.ad.ecom.ecomuser.persistence.EcomUser;
+import com.ad.ecom.ecomuser.persistance.EcomUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.bitwalker.useragentutils.UserAgent;
 import org.apache.logging.log4j.LogManager;
