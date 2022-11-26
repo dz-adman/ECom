@@ -1,6 +1,6 @@
 package com.ad.ecom.user.cart.dto;
 
-import com.ad.ecom.common.dto.Item;
+import com.ad.ecom.products.dto.Item;
 import com.sun.istack.NotNull;
 import lombok.*;
 

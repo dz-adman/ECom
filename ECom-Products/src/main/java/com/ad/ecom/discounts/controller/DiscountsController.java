@@ -1,6 +1,6 @@
 package com.ad.ecom.discounts.controller;
 
-import com.ad.ecom.common.ResponseMessage;
+import com.ad.ecom.common.dto.ResponseMessage;
 import com.ad.ecom.discounts.dto.DiscountsDto;
 import com.ad.ecom.discounts.dto.DiscountsFilter;
 import com.ad.ecom.discounts.dto.DiscountsObjDto;

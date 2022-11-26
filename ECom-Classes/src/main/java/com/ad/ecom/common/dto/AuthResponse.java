@@ -1,4 +1,4 @@
-package com.ad.ecom.common;
+package com.ad.ecom.common.dto;
 
 import com.ad.ecom.ecomuser.stubs.Role;
 import lombok.Builder;

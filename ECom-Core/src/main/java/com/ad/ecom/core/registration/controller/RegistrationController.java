@@ -1,6 +1,6 @@
 package com.ad.ecom.core.registration.controller;
 
-import com.ad.ecom.common.ResponseMessage;
+import com.ad.ecom.common.dto.ResponseMessage;
 import com.ad.ecom.registration.dto.RegistrationRequest;
 import com.ad.ecom.core.registration.service.RegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,6 @@
 package com.ad.ecom.controller;
 
-import com.ad.ecom.common.ResponseMessage;
+import com.ad.ecom.common.dto.ResponseMessage;
 import com.ad.ecom.orders.repository.OrderRepository;
 import com.ad.ecom.service.OrdersService;
 import org.apache.logging.log4j.LogManager;

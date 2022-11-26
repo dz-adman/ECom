@@ -1,4 +1,4 @@
-package com.ad.ecom.common.dto;
+package com.ad.ecom.products.dto;
 
 import com.ad.ecom.products.stubs.ProductStockUnit;
 import lombok.*;

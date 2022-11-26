@@ -1,8 +1,10 @@
-package com.ad.ecom.common;
+package com.ad.ecom.common.dto;
 
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
+import java.util.Calendar;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -21,6 +23,16 @@ public class EComDate {
     private int minute;
     private int second;
 
+    public EComDate(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        this.year = calendar.get(Calendar.YEAR);
+        this.month = calendar.get(Calendar.MONTH);
+        this.day = calendar.get(Calendar.DAY_OF_MONTH);
+        this.hour = calendar.get(Calendar.HOUR);
+        this.minute = calendar.get(Calendar.MINUTE);
+        this.second = calendar.get(Calendar.SECOND);
+    }
     public boolean eq(EComDate eComDate) {
         return this.getYear() == eComDate.getYear() && this.getMonth() == eComDate.getMonth() && this.getDay() == eComDate.getDay()
                 && this.getHour() == eComDate.getHour() && this.getMinute() == eComDate.getMinute() && this.getSecond() == eComDate.getSecond();

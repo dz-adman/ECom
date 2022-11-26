@@ -1,6 +1,6 @@
 package com.ad.ecom.service;
 
-import com.ad.ecom.common.ResponseMessage;
+import com.ad.ecom.common.dto.ResponseMessage;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
