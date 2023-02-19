@@ -3,7 +3,7 @@ package com.ad.ecom.core.security.config;
 import com.ad.ecom.common.dto.AuthResponse;
 import com.ad.ecom.common.dto.ResponseMessage;
 import com.ad.ecom.common.stub.ResponseType;
-import com.ad.ecom.ecomuser.persistance.EcomUser;
+import com.ad.ecom.ecomuser.persistance.EComUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,9 +18,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class EcomLogoutSuccessHandler implements LogoutSuccessHandler {
+public class EComLogoutSuccessHandler implements LogoutSuccessHandler {
 
-    private final Logger LOGGER = LogManager.getLogger(EcomLogoutSuccessHandler.class);
+    private final Logger LOGGER = LogManager.getLogger(EComLogoutSuccessHandler.class);
     private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     @Override
@@ -31,7 +31,7 @@ public class EcomLogoutSuccessHandler implements LogoutSuccessHandler {
         System.out.println();
 
         ResponseMessage responseMessage = new ResponseMessage();
-        AuthResponse authResponse = AuthResponse.builder().isAuthenticated(false).role(((EcomUser)authentication.getPrincipal()).getRole()).build();
+        AuthResponse authResponse = AuthResponse.builder().isAuthenticated(false).role(((EComUser)authentication.getPrincipal()).getRole()).build();
         responseMessage.addResponse(ResponseType.SUCCESS, "LOGOUT SUCCESS");
         responseMessage.setResponseData(authResponse);
 

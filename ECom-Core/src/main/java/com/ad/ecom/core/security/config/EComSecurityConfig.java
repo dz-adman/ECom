@@ -21,7 +21,7 @@ import org.springframework.web.context.request.RequestContextListener;
 
 @Configuration
 @EnableWebSecurity
-public class EcomSecurityConfig extends WebSecurityConfigurerAdapter {
+public class EComSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private UserDetailsService userDetailsService;
@@ -58,12 +58,12 @@ public class EcomSecurityConfig extends WebSecurityConfigurerAdapter {
                 .exceptionHandling().accessDeniedHandler(eComExceptionHandler)
                 .and()
                 .formLogin()
-                .successHandler(new EcomAuthSuccessHandler())
-                .failureHandler(new EcomAuthFailureHandler())
+                .successHandler(new EComAuthSuccessHandler())
+                .failureHandler(new EComAuthFailureHandler())
                 .and()
                 .logout()
                 .logoutUrl("/logout")
-                .logoutSuccessHandler(new EcomLogoutSuccessHandler())
+                .logoutSuccessHandler(new EComLogoutSuccessHandler())
                 .invalidateHttpSession(true)
                 .deleteCookies("XSRF-TOKEN")
                 .deleteCookies("JSESSIONID")

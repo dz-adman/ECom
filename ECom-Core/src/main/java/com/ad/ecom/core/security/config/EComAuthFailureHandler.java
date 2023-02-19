@@ -15,9 +15,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class EcomAuthFailureHandler implements AuthenticationFailureHandler {
+public class EComAuthFailureHandler implements AuthenticationFailureHandler {
 
-    private final Logger LOGGER = LogManager.getLogger(EcomAuthFailureHandler.class);
+    private final Logger LOGGER = LogManager.getLogger(EComAuthFailureHandler.class);
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException ex) throws IOException, ServletException {

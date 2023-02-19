@@ -4,7 +4,7 @@ import com.ad.ecom.common.dto.AuthResponse;
 import com.ad.ecom.common.dto.ResponseMessage;
 import com.ad.ecom.common.stub.ResponseType;
 import com.ad.ecom.core.context.EComUserLoginContext;
-import com.ad.ecom.ecomuser.persistance.EcomUser;
+import com.ad.ecom.ecomuser.persistance.EComUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.bitwalker.useragentutils.UserAgent;
 import org.apache.logging.log4j.LogManager;
@@ -28,9 +28,9 @@ import java.util.Date;
 
 @Component
 @Scope(value="session", proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class EcomAuthSuccessHandler implements AuthenticationSuccessHandler {
+public class EComAuthSuccessHandler implements AuthenticationSuccessHandler {
 
-    private final Logger LOGGER = LogManager.getLogger(EcomAuthSuccessHandler.class);
+    private final Logger LOGGER = LogManager.getLogger(EComAuthSuccessHandler.class);
     private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     @Autowired
@@ -46,7 +46,7 @@ public class EcomAuthSuccessHandler implements AuthenticationSuccessHandler {
         this.initializeEComUserContext(httpServletRequest, authentication);
 
         ResponseMessage responseMessage = new ResponseMessage();
-        AuthResponse authResponse = AuthResponse.builder().isAuthenticated(true).role(((EcomUser)authentication.getPrincipal()).getRole()).build();
+        AuthResponse authResponse = AuthResponse.builder().isAuthenticated(true).role(((EComUser)authentication.getPrincipal()).getRole()).build();
         responseMessage.addResponse(ResponseType.SUCCESS, "AUTH SUCCESS");
         responseMessage.setResponseData(authResponse);
 
@@ -60,7 +60,7 @@ public class EcomAuthSuccessHandler implements AuthenticationSuccessHandler {
         EComUserLoginContext eComUserLoginContext = context.getBean(EComUserLoginContext.class);
 
         UserAgent userAgent = UserAgent.parseUserAgentString(httpServletRequest.getHeader("User-Agent"));
-        eComUserLoginContext.setUserInfo(EcomUser.class.cast(authentication.getPrincipal()));
+        eComUserLoginContext.setUserInfo(EComUser.class.cast(authentication.getPrincipal()));
         eComUserLoginContext.setLoggedInAt(new Date(System.currentTimeMillis()));
         eComUserLoginContext.setLoggedInFrom(userAgent.getBrowser().getName());
         eComUserLoginContext.setLoggedInTo(userAgent.getOperatingSystem().getDeviceType().getName());

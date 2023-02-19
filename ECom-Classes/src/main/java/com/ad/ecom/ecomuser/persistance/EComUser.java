@@ -19,7 +19,7 @@ import java.util.Collection;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
 @Entity(name = "ECOM_USER")
-public class EcomUser implements UserDetails {
+public class EComUser implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -51,7 +51,7 @@ public class EcomUser implements UserDetails {
     private Boolean deleted = false;
 
     @Builder
-    public EcomUser(String firstName, String lastName, String loginId, String email, String password, Role role, Boolean locked, Boolean enabled, Boolean deleted) {
+    public EComUser(String firstName, String lastName, String loginId, String email, String password, Role role, Boolean locked, Boolean enabled, Boolean deleted) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.loginId = loginId;
