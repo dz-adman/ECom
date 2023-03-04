@@ -32,5 +32,6 @@ public class TicketReply {
 
     private Date repliedOn;
 
+    @OneToMany(targetEntity = TicketReplyAttachment.class, mappedBy = "id")
     private List<TicketReplyAttachment> attachments;
 }

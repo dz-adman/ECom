@@ -4,7 +4,7 @@ import com.ad.ecom.common.dto.ResponseMessage;
 import com.ad.ecom.common.stub.ResponseType;
 import com.ad.ecom.core.context.EComUserLoginContext;
 import com.ad.ecom.core.security.PasswordEncoder;
-import com.ad.ecom.ecomuser.persistance.EcomUser;
+import com.ad.ecom.ecomuser.persistance.EComUser;
 import com.ad.ecom.ecomuser.repository.EcomUserRepository;
 import com.ad.ecom.registration.persistance.VerificationToken;
 import com.ad.ecom.registration.repository.VerificationTokenRepository;
@@ -12,10 +12,10 @@ import com.ad.ecom.user.profile.dto.AddressDto;
 import com.ad.ecom.user.profile.dto.UpdatePwdEmailReq;
 import com.ad.ecom.user.profile.dto.UserInfoDto;
 import com.ad.ecom.user.profile.persistance.Address;
-import com.ad.ecom.user.profile.service.ProfileService;
-import com.ad.ecom.user.profile.util.emailEvent.*;
 import com.ad.ecom.user.profile.repository.AddressRepository;
+import com.ad.ecom.user.profile.service.ProfileService;
 import com.ad.ecom.user.profile.stubs.AddressType;
+import com.ad.ecom.user.profile.util.emailEvent.*;
 import com.ad.ecom.util.EComUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -26,7 +26,10 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpSession;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Optional;
 
 @Component
 public class ProfileServiceImpl implements ProfileService {
@@ -47,7 +50,7 @@ public class ProfileServiceImpl implements ProfileService {
         ResponseMessage responseMessage = new ResponseMessage();
         UserInfoDto userInfoDto = new UserInfoDto();
         List<AddressDto> addresses = null;
-        EcomUser ecomUser = loginContext.getUserInfo();
+        EComUser ecomUser = loginContext.getUserInfo();
         Optional<List<Address>> addressList = addressRepo.findAllByUserId(ecomUser.getId());
         if(addressList.isPresent() && !addressList.get().isEmpty()) { // At-least 1 Address is there
             addresses = convertAddressesToDto(addressList.get());
@@ -70,7 +73,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public ResponseEntity<ResponseMessage> updateUserInfo(UserInfoDto userInfoDto) {
         ResponseMessage responseMessage = new ResponseMessage();
-        EcomUser user = loginContext.getUserInfo();
+        EComUser user = loginContext.getUserInfo();
         user.setFirstName(userInfoDto.getFirstName());
         user.setLastName(userInfoDto.getLastName());
         userRepo.save(user);
@@ -81,7 +84,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public ResponseEntity<ResponseMessage> deleteUserAccount() {
         ResponseMessage responseMessage = new ResponseMessage();
-        Optional<EcomUser> userData = userRepo.findByLoginIdAndDeletedFalse(loginContext.getUserInfo().getLoginId());
+        Optional<EComUser> userData = userRepo.findByLoginIdAndDeletedFalse(loginContext.getUserInfo().getLoginId());
         if(userData.isPresent()) {
             // send token on user email
             eventPublisher.publishEvent(new AccountDelTokenEmailEvent(this, userData.get()));
@@ -114,7 +117,7 @@ public class ProfileServiceImpl implements ProfileService {
             // Delete Token from table
             tokenRepo.delete(vToken.get());
             // Delete User
-            EcomUser user = vToken.get().getUser();
+            EComUser user = vToken.get().getUser();
             user.setDeleted(true);
             userRepo.save(user);
 
@@ -131,7 +134,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public ResponseEntity<ResponseMessage> updatePassword() {
         ResponseMessage responseMessage = new ResponseMessage();
-        Optional<EcomUser> userData = userRepo.findByLoginIdAndDeletedFalse(loginContext.getUserInfo().getLoginId());
+        Optional<EComUser> userData = userRepo.findByLoginIdAndDeletedFalse(loginContext.getUserInfo().getLoginId());
         if(userData.isPresent()) {
             // send token on user email
             eventPublisher.publishEvent(new UpdatePwdTokenEmailEvent(this, userData.get()));
@@ -162,7 +165,7 @@ public class ProfileServiceImpl implements ProfileService {
             // ELSE (Valid Token)
 
             // update user password
-            EcomUser user = vToken.get().getUser();
+            EComUser user = vToken.get().getUser();
             PasswordEncoder passwordEncoder = new PasswordEncoder();
             user.setPassword(passwordEncoder.encode(request.getNewPassword()));
             userRepo.save(user);
@@ -183,7 +186,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public ResponseEntity<ResponseMessage> updateEmail() {
         ResponseMessage responseMessage = new ResponseMessage();
-        Optional<EcomUser> userData = userRepo.findByLoginIdAndDeletedFalse(loginContext.getUserInfo().getLoginId());
+        Optional<EComUser> userData = userRepo.findByLoginIdAndDeletedFalse(loginContext.getUserInfo().getLoginId());
         if(userData.isPresent()) {
             // send token on user email
             eventPublisher.publishEvent(new UpdateEmailIdTokenEmailEvent(this, userData.get()));
@@ -218,7 +221,7 @@ public class ProfileServiceImpl implements ProfileService {
             // ELSE (Valid Token)
 
             // update user emailId
-            EcomUser user = vToken.get().getUser();
+            EComUser user = vToken.get().getUser();
             String oldEmailId = user.getEmail();
             user.setEmail(request.getNewEmailId());
             userRepo.save(user);

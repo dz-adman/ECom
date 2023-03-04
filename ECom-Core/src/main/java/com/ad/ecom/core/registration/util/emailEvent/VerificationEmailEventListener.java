@@ -1,7 +1,7 @@
 package com.ad.ecom.core.registration.util.emailEvent;
 
 import com.ad.ecom.core.util.WebTemplates;
-import com.ad.ecom.ecomuser.persistance.EcomUser;
+import com.ad.ecom.ecomuser.persistance.EComUser;
 import com.ad.ecom.registration.persistance.VerificationToken;
 import com.ad.ecom.registration.repository.VerificationTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ public class VerificationEmailEventListener {
     @EventListener
     @Async
     public Boolean confirmRegistration(VerificationEmailEvent event) {
-        EcomUser user = event.getUser();
+        EComUser user = event.getUser();
         String token = UUID.randomUUID().toString();
         if(!user.isEnabled()) {
             Optional<VerificationToken> tokenEntry = tokenRepository.findByUser(user);

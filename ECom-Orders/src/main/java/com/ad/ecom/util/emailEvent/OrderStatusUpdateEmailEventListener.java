@@ -1,7 +1,7 @@
 package com.ad.ecom.util.emailEvent;
 
 import com.ad.ecom.core.util.WebTemplates;
-import com.ad.ecom.ecomuser.persistance.EcomUser;
+import com.ad.ecom.ecomuser.persistance.EComUser;
 import com.ad.ecom.orders.stubs.OrderStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +31,7 @@ public class OrderStatusUpdateEmailEventListener {
     @EventListener
     @Async
     public Boolean sendNotificationMail(OrderStatusUpdateEmailEvent event) {
-        EcomUser user = event.getUser();
+        EComUser user = event.getUser();
         long orderId = event.getOrderId();
         OrderStatus orderStatus = event.getOrderStatus();
         String body = WebTemplates.OrderStatusUpdateTemplate(user, orderId, orderStatus, serverUrl+contextPath+"/login");

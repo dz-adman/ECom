@@ -1,11 +1,11 @@
 package com.ad.ecom.core.util;
 
-import com.ad.ecom.ecomuser.persistance.EcomUser;
+import com.ad.ecom.ecomuser.persistance.EComUser;
 import com.ad.ecom.orders.stubs.OrderStatus;
 
 public final class WebTemplates {
 
-    public static String RegistrationConfirmationTemplate(EcomUser user, String URL) {
+    public static String RegistrationConfirmationTemplate(EComUser user, String URL) {
         return "<!DOCTYPE html>\n" +
                 "<html>\n" +
                 "\t<head>\n" +
@@ -56,7 +56,7 @@ public final class WebTemplates {
                 "</html>";
     }
 
-    public static String OrderStatusUpdateTemplate(EcomUser user, long orderId, OrderStatus orderStatus, String loginURL) {
+    public static String OrderStatusUpdateTemplate(EComUser user, long orderId, OrderStatus orderStatus, String loginURL) {
         return "<!DOCTYPE html>\n" +
                 "<html>\n" +
                 "\t<head>\n" +

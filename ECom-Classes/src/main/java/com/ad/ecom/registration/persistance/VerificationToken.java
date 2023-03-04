@@ -1,9 +1,9 @@
 package com.ad.ecom.registration.persistance;
 
-import com.ad.ecom.ecomuser.persistance.EcomUser;
+import com.ad.ecom.ecomuser.persistance.EComUser;
 import lombok.*;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -28,7 +28,7 @@ public class VerificationToken {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user", nullable = false)
-    private EcomUser user;
+    private EComUser user;
 
     @Column(nullable = false)
     private Timestamp generatedOn;

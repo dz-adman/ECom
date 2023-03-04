@@ -1,12 +1,11 @@
 package com.ad.ecom.service.impl;
 
 import com.ad.ecom.common.dto.ResponseMessage;
-import com.ad.ecom.products.dto.Item;
 import com.ad.ecom.common.stub.ResponseType;
 import com.ad.ecom.core.context.EComUserLoginContext;
 import com.ad.ecom.discounts.persistance.DiscountSubscription;
 import com.ad.ecom.discounts.repository.DiscountSubscriptionRepository;
-import com.ad.ecom.ecomuser.persistance.EcomUser;
+import com.ad.ecom.ecomuser.persistance.EComUser;
 import com.ad.ecom.ecomuser.repository.EcomUserRepository;
 import com.ad.ecom.ecomuser.stubs.Role;
 import com.ad.ecom.orders.dto.OrderInfo;
@@ -16,6 +15,7 @@ import com.ad.ecom.orders.persistance.OrderItem;
 import com.ad.ecom.orders.repository.OrderRepository;
 import com.ad.ecom.orders.stubs.OrderEvent;
 import com.ad.ecom.orders.stubs.OrderStatus;
+import com.ad.ecom.products.dto.Item;
 import com.ad.ecom.products.persistance.Product;
 import com.ad.ecom.products.repository.ProductRepository;
 import com.ad.ecom.service.OrdersService;
@@ -503,7 +503,7 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     private void sendOrderStatusUpdateMail(Order order) {
-        Optional<EcomUser> user = userRepo.findById(order.getUserId());
+        Optional<EComUser> user = userRepo.findById(order.getUserId());
         eventPublisher.publishEvent(new OrderStatusUpdateEmailEvent(this, user.get(), order.getOrderId(), order.getStatus()));
     }
 }

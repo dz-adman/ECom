@@ -5,7 +5,7 @@ import com.ad.ecom.common.stub.ResponseType;
 import com.ad.ecom.core.context.EComUserLoginContext;
 import com.ad.ecom.discounts.repository.DiscountRepository;
 import com.ad.ecom.discounts.repository.DiscountSubscriptionRepository;
-import com.ad.ecom.ecomuser.persistance.EcomUser;
+import com.ad.ecom.ecomuser.persistance.EComUser;
 import com.ad.ecom.products.dto.ProductDto;
 import com.ad.ecom.products.dto.ProductFilter;
 import com.ad.ecom.products.dto.ProductFullInfo;
@@ -186,7 +186,7 @@ public class ProductsServiceImpl implements ProductsService {
         return productDtoList;
     }
 
-    private List<ProductFullInfo> convertToProductListForOwner(List<Product> products, EcomUser user) {
+    private List<ProductFullInfo> convertToProductListForOwner(List<Product> products, EComUser user) {
         List<ProductFullInfo> productFullInfoList = new ArrayList<>();
         for (Product prdct : products) {
             ProductFullInfo product = new ProductFullInfo();

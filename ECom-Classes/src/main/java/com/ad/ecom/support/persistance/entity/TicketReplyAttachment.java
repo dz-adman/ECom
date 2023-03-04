@@ -23,5 +23,6 @@ public class TicketReplyAttachment {
     @OnDelete(action = OnDeleteAction.CASCADE)
     public TicketReply reply;
 
+    @Lob
     private byte[] data;
 }

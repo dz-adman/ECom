@@ -1,6 +1,6 @@
 package com.ad.ecom.user.profile.util.emailEvent;
 
-import com.ad.ecom.ecomuser.persistance.EcomUser;
+import com.ad.ecom.ecomuser.persistance.EComUser;
 import com.ad.ecom.registration.persistance.VerificationToken;
 import com.ad.ecom.registration.repository.VerificationTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +47,7 @@ public class ProfileEmailEventsListener {
     @EventListener
     @Async
     public Boolean accountDelTokenGenAndMailSend(AccountDelTokenEmailEvent event) {
-        EcomUser user = event.getUser();
+        EComUser user = event.getUser();
         // Generate and save new token
         String token = UUID.randomUUID().toString();
         VerificationToken verificationToken = new VerificationToken();
@@ -77,7 +77,7 @@ public class ProfileEmailEventsListener {
     @EventListener
     @Async
     public Boolean updatePwdTokenGenAndMailSend(UpdatePwdTokenEmailEvent event) {
-        EcomUser user = event.getUser();
+        EComUser user = event.getUser();
         // Generate and save new token
         String token = UUID.randomUUID().toString();
         VerificationToken verificationToken = new VerificationToken();
@@ -107,7 +107,7 @@ public class ProfileEmailEventsListener {
     @EventListener
     @Async
     public Boolean updatePwdSuccessMailSend(UpdatePwdEmailEvent event) {
-        EcomUser user = event.getUser();
+        EComUser user = event.getUser();
         String message =  String.format(UPDT_PWD_FORMAT, user.getFirstName(), user.getLastName());
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
@@ -127,7 +127,7 @@ public class ProfileEmailEventsListener {
     @EventListener
     @Async
     public Boolean updateEmailIdTokenGenAndMailSend(UpdateEmailIdTokenEmailEvent event) {
-        EcomUser user = event.getUser();
+        EComUser user = event.getUser();
         // Generate and save new token
         String token = UUID.randomUUID().toString();
         VerificationToken verificationToken = new VerificationToken();

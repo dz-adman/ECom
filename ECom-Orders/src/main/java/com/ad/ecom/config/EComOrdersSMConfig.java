@@ -4,14 +4,21 @@ import com.ad.ecom.orders.stubs.OrderEvent;
 import com.ad.ecom.orders.stubs.OrderStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.config.EnableStateMachineFactory;
 import org.springframework.statemachine.config.StateMachineConfigurerAdapter;
+import org.springframework.statemachine.config.StateMachineFactory;
 import org.springframework.statemachine.config.builders.StateMachineConfigurationConfigurer;
 import org.springframework.statemachine.config.builders.StateMachineStateConfigurer;
 import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
+import org.springframework.statemachine.data.jpa.JpaPersistingStateMachineInterceptor;
+import org.springframework.statemachine.data.jpa.JpaStateMachineRepository;
 import org.springframework.statemachine.listener.StateMachineListenerAdapter;
+import org.springframework.statemachine.persist.StateMachineRuntimePersister;
+import org.springframework.statemachine.service.DefaultStateMachineService;
+import org.springframework.statemachine.service.StateMachineService;
 import org.springframework.statemachine.state.State;
 
 import java.util.EnumSet;
@@ -123,6 +130,19 @@ public class EComOrdersSMConfig extends StateMachineConfigurerAdapter<OrderStatu
         config.withConfiguration()
               .autoStartup(false)
               .listener(ssmListener);
+    }
+
+    @Bean
+    public StateMachineRuntimePersister<OrderStatus, OrderEvent, String> stateMachineRuntimePersister(
+            JpaStateMachineRepository jpaStateMachineRepository) {
+        return new JpaPersistingStateMachineInterceptor<>(jpaStateMachineRepository);
+    }
+
+    @Bean
+    public StateMachineService<OrderStatus, OrderEvent> stateMachineService(
+            StateMachineFactory<OrderStatus, OrderEvent> stateMachineFactory,
+            StateMachineRuntimePersister<OrderStatus, OrderEvent, String> stateMachineRuntimePersister) {
+        return new DefaultStateMachineService<>(stateMachineFactory, stateMachineRuntimePersister);
     }
 
 }

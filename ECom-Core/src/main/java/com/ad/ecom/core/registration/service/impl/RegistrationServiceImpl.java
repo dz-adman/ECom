@@ -3,9 +3,9 @@ package com.ad.ecom.core.registration.service.impl;
 import com.ad.ecom.common.dto.ResponseMessage;
 import com.ad.ecom.common.stub.ResponseType;
 import com.ad.ecom.core.registration.service.RegistrationService;
-import com.ad.ecom.core.util.WebTemplates;
 import com.ad.ecom.core.registration.util.emailEvent.VerificationEmailEvent;
-import com.ad.ecom.ecomuser.persistance.EcomUser;
+import com.ad.ecom.core.util.WebTemplates;
+import com.ad.ecom.ecomuser.persistance.EComUser;
 import com.ad.ecom.ecomuser.repository.EcomUserRepository;
 import com.ad.ecom.exception.UserAlreadyExistsException;
 import com.ad.ecom.registration.dto.RegistrationRequest;
@@ -50,7 +50,7 @@ public class RegistrationServiceImpl implements RegistrationService {
         boolean userExists = ecomUserRepository.existsByLoginIdAndEmailAndDeletedFalse(request.getLoginId(), request.getEmail());
         if(!userExists) {
             try {
-                EcomUser user = new EcomUser(request.getFirstName(), request.getLastName(), request.getLoginId(), request.getEmail(),
+                EComUser user = new EComUser(request.getFirstName(), request.getLastName(), request.getLoginId(), request.getEmail(),
                                              bCryptPasswordEncoder.encode(request.getPassword()), request.getRole(), true, false, false);
                 ecomUserRepository.save(user);
                 // send confirmation link email
@@ -81,7 +81,7 @@ public class RegistrationServiceImpl implements RegistrationService {
                         verified = true;
                         tokenObject.get().setUsed(true);
                         tokenRepository.save(tokenObject.get());
-                        EcomUser user = tokenObject.get().getUser();
+                        EComUser user = tokenObject.get().getUser();
                         user.setEnabled(true);
                         user.setLocked(false);
                         userRepository.save(user);
@@ -98,7 +98,7 @@ public class RegistrationServiceImpl implements RegistrationService {
         return new ResponseEntity("<h2 style=\"color:red\">Invalid token or request!</h2>", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    private void sendConfirmationMail(EcomUser user) {
+    private void sendConfirmationMail(EComUser user) {
         eventPublisher.publishEvent(new VerificationEmailEvent(this, user, serverUrl + contextPath + "/registration/verify"));
     }
 
@@ -106,7 +106,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     public ResponseEntity<ResponseMessage> regenerateToken(RegistrationRequest request) {
         ResponseMessage respMsg = new ResponseMessage();
         if(Optional.ofNullable(request).isPresent() && (request.getEmail() != null || request.getLoginId() != null)) {
-            Optional<EcomUser> user = userRepository.findByLoginIdOrEmailAndDeletedFalse(request.getLoginId(), request.getEmail());
+            Optional<EComUser> user = userRepository.findByLoginIdOrEmailAndDeletedFalse(request.getLoginId(), request.getEmail());
             if(user.isPresent()) {
                 if(!user.get().getEnabled()) {
                     sendConfirmationMail(user.get());
