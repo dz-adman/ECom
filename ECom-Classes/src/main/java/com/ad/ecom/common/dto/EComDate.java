@@ -3,6 +3,10 @@ package com.ad.ecom.common.dto;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -33,85 +37,33 @@ public class EComDate {
         this.minute = calendar.get(Calendar.MINUTE);
         this.second = calendar.get(Calendar.SECOND);
     }
+
+    public Instant toInstant() {
+        ZonedDateTime zonedDateTime = LocalDateTime.of(year, month, day, hour, minute, second)
+                .atZone(ZoneId.systemDefault());
+        return zonedDateTime.toInstant();
+    }
+
     public boolean eq(EComDate eComDate) {
-        return this.getYear() == eComDate.getYear() && this.getMonth() == eComDate.getMonth() && this.getDay() == eComDate.getDay()
-                && this.getHour() == eComDate.getHour() && this.getMinute() == eComDate.getMinute() && this.getSecond() == eComDate.getSecond();
+        return this.toInstant().equals(eComDate.toInstant());
     }
 
     public boolean gt(EComDate eComDate) {
-        if (this.getYear() > eComDate.getYear()) return true;
-        else if (this.getYear() == eComDate.getYear()) {
-            if (this.getMonth() > eComDate.getMonth()) return true;
-            else if (this.getMonth() == eComDate.getMonth()) {
-                if (this.getDay() > eComDate.getDay()) return true;
-                else if (this.getDay() == eComDate.getDay()) {
-                    if (this.getHour() > eComDate.getHour()) return true;
-                    else if (this.getHour() == eComDate.getHour()) {
-                        if (this.getMinute() > eComDate.getMinute()) return true;
-                        else if (this.getMinute() == eComDate.getMinute()) {
-                            return this.getSecond() > eComDate.getSecond();
-                        } else return false;
-                    } else return false;
-                } else return false;
-            } else return false;
-        } else return false;
+        return this.toInstant().isAfter(eComDate.toInstant());
     }
 
     public boolean gtEq(EComDate eComDate) {
-        if (this.getYear() > eComDate.getYear()) return true;
-        else if (this.getYear() == eComDate.getYear()) {
-            if (this.getMonth() > eComDate.getMonth()) return true;
-            else if (this.getMonth() == eComDate.getMonth()) {
-                if (this.getDay() > eComDate.getDay()) return true;
-                else if (this.getDay() == eComDate.getDay()) {
-                    if (this.getHour() > eComDate.getHour()) return true;
-                    else if (this.getHour() == eComDate.getHour()) {
-                        if (this.getMinute() > eComDate.getMinute()) return true;
-                        else if (this.getMinute() == eComDate.getMinute()) {
-                            return this.getSecond() >= eComDate.getSecond();
-                        } else return false;
-                    } else return false;
-                } else return false;
-            } else return false;
-        } else return false;
+        Instant thisInstant = this.toInstant(), otherInstant = eComDate.toInstant();
+        return thisInstant.isAfter(otherInstant) || thisInstant.equals(otherInstant);
     }
 
     public boolean lt(EComDate eComDate) {
-        if (this.getYear() < eComDate.getYear()) return true;
-        else if (this.getYear() == eComDate.getYear()) {
-            if (this.getMonth() < eComDate.getMonth()) return true;
-            else if (this.getMonth() == eComDate.getMonth()) {
-                if (this.getDay() < eComDate.getDay()) return true;
-                else if (this.getDay() == eComDate.getDay()) {
-                    if (this.getHour() < eComDate.getHour()) return true;
-                    else if (this.getHour() == eComDate.getHour()) {
-                        if (this.getMinute() < eComDate.getMinute()) return true;
-                        else if (this.getMinute() == eComDate.getMinute()) {
-                            return this.getSecond() < eComDate.getSecond();
-                        } else return false;
-                    } else return false;
-                } else return false;
-            } else return false;
-        } else return false;
+        return this.toInstant().isBefore(eComDate.toInstant());
     }
 
     public boolean ltEq(EComDate eComDate) {
-        if (this.getYear() < eComDate.getYear()) return true;
-        else if (this.getYear() == eComDate.getYear()) {
-            if (this.getMonth() < eComDate.getMonth()) return true;
-            else if (this.getMonth() == eComDate.getMonth()) {
-                if (this.getDay() < eComDate.getDay()) return true;
-                else if (this.getDay() == eComDate.getDay()) {
-                    if (this.getHour() < eComDate.getHour()) return true;
-                    else if (this.getHour() == eComDate.getHour()) {
-                        if (this.getMinute() < eComDate.getMinute()) return true;
-                        else if (this.getMinute() == eComDate.getMinute()) {
-                            return this.getSecond() <= eComDate.getSecond();
-                        } else return false;
-                    } else return false;
-                } else return false;
-            } else return false;
-        } else return false;
+        Instant thisInstant = this.toInstant(), otherInstant = eComDate.toInstant();
+        return thisInstant.isBefore(otherInstant) || thisInstant.equals(otherInstant);
     }
 
 }
