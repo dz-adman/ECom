@@ -2,7 +2,7 @@
 E-Commerce Application Backend in Multi-Module Spring Framework Based Project
 
 ## Modules
-- **Boot** : The aplication boots from here.
+- **Boot** : The application boots from here.
 - **Classes** : Contains all the common classes used in the application.
 - **Core** : Core configuration of the application.
 <br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; [Config for Spring-Security, Custom-Logging, User-Registration, User-Login, Async-Jobs, LoginContext and more]
