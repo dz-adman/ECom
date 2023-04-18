@@ -1,5 +1,5 @@
 # ECom
-E-Commerce Application Backend in Multi-Module Spring Framework Based Project
+E-Commerce Application Backend in Multi-Module Spring Boot Project
 
 ## Modules
 - **Boot** : The application boots from here.
